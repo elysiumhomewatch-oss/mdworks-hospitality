@@ -472,9 +472,8 @@
         </div>
       </div>
 
-            <!-- ── IMAGES ── -->
+      <!-- ── IMAGES ── -->
       <div class="page" id="page-images">
-
         <div class="card">
           <div class="card-title">Site Images</div>
           <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.5rem;">Upload each named image below. The site falls back to its placeholder if no image is uploaded. Images are served via ImageKit CDN.</p>
@@ -506,7 +505,6 @@
         </div>
       </div>
 
-
       <!-- ── PENDING ── -->
       <div class="page" id="page-pending">
         <div class="card">
@@ -524,7 +522,7 @@
 
 <script>
 // ─── Config ───────────────────────────────────────────────────────────────────
-const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev'; // ← update after deploy
+const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev';
 let TOKEN = '';
 let _content = null;
 let _bookings = null;
@@ -535,7 +533,6 @@ function doLogin() {
   const val = document.getElementById('token-input').value.trim();
   if (!val) return;
   TOKEN = val;
-  // Verify by fetching bookings
   fetch(`${API}/api/bookings`, { headers: { Authorization: `Bearer ${TOKEN}` } })
     .then(r => {
       if (r.status === 401) {
@@ -553,7 +550,6 @@ function doLogin() {
 
 document.getElementById('token-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-// Check for saved session
 const saved = sessionStorage.getItem('admin_token');
 if (saved) {
   TOKEN = saved;
@@ -645,7 +641,6 @@ function renderDashboard(c) {
   document.getElementById('stat-total').textContent     = bookings.length;
   document.getElementById('stat-checklist').textContent = pendingItems;
 
-  // Recent bookings
   const tbody = document.querySelector('#recent-bookings-table tbody');
   const recent = bookings.slice(0, 8);
   tbody.innerHTML = recent.length
@@ -659,7 +654,6 @@ function renderDashboard(c) {
         </tr>`).join('')
     : '<tr><td colspan="5" style="color:var(--muted);">No bookings yet</td></tr>';
 
-  // Pending checklist preview
   const ul = document.getElementById('dash-pending-list');
   ul.innerHTML = (c.pending?.items || []).map(i => `
     <li class="pending-item ${i.done ? 'done' : ''}">
@@ -711,7 +705,6 @@ document.querySelectorAll('.filter-status').forEach(btn => {
 });
 
 async function openBookingDetail(id) {
-  // Navigate to bookings page first so the detail panel is visible
   navigateTo('bookings');
   const booking = await apiFetch(`/api/booking/${id}`);
   const el = document.getElementById('booking-detail-body');
@@ -816,26 +809,65 @@ function renderRoomsEditor(rooms) {
       </div>
       <div class="form-row">
         <div class="form-group"><label>Name</label><input oninput="_rooms[${i}].name=this.value" value="${r.name || ''}" placeholder="e.g. The Garden Room"></div>
-        <div class="form-group"><label>Slug (URL)</label><input oninput="_rooms[${i}].slug=this.value" value="${r.slug || ''}" placeholder="e.g. garden-room"></div>
+        <div class="form-group"><label>Bed Type</label><input oninput="_rooms[${i}].bedType=this.value" value="${r.bedType || ''}" placeholder="e.g. King / Twin"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Bed Type</label><input oninput="_rooms[${i}].bedType=this.value" value="${r.bedType || ''}" placeholder="e.g. King / Twin"></div>
         <div class="form-group"><label>Occupancy</label><input oninput="_rooms[${i}].occupancy=this.value" value="${r.occupancy || ''}" placeholder="e.g. 2 adults"></div>
+        <div class="form-group">
+          <label>Placeholder (room details TBC)</label>
+          <select onchange="_rooms[${i}].placeholder=this.value==='true'">
+            <option value="false" ${!r.placeholder ? 'selected' : ''}>No — show full details</option>
+            <option value="true"  ${r.placeholder  ? 'selected' : ''}>Yes — coming soon</option>
+          </select>
+        </div>
       </div>
       <div class="form-row full">
         <div class="form-group"><label>Description</label><textarea oninput="_rooms[${i}].description=this.value">${r.description || ''}</textarea></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>Amenities (comma-separated)</label><input oninput="_rooms[${i}].amenities=this.value.split(',')" value="${(r.amenities||[]).join(', ')}" placeholder="En-suite, AC, TV, Safe"></div>
+      <div class="form-row full">
+        <div class="form-group"><label>Amenities (comma-separated)</label><input oninput="_rooms[${i}].amenities=this.value.split(',')" value="${(r.amenities || []).join(', ')}" placeholder="En-suite, AC, TV, Safe"></div>
+      </div>
+      <div class="form-row full">
         <div class="form-group">
-          <label>Placeholder (room details TBC)</label>
-          <select onchange="_rooms[${i}].placeholder=this.value==='true'">
-            <option value="false" ${!r.placeholder?'selected':''}>No — show full details</option>
-            <option value="true"  ${r.placeholder?'selected':''}>Yes — coming soon</option>
-          </select>
+          <label>Room Image</label>
+          ${r.heroImage
+            ? `<div style="position:relative; margin-bottom:.5rem; max-width:320px;">
+                 <img src="${r.heroImage}" style="width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:4px; display:block;">
+                 <button onclick="_rooms[${i}].heroImage=''; saveRooms(); renderRoomsEditor(_rooms);" style="position:absolute;top:.3rem;right:.3rem;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:24px;height:24px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Remove image">✕</button>
+               </div>`
+            : ''}
+          <div class="upload-zone" style="padding:.75rem; max-width:320px;" onclick="triggerUpload('room-img-${i}')">
+            <input type="file" id="room-img-${i}" accept="image/*" onchange="uploadRoomImage(event, ${i})">
+            <div style="font-size:1.2rem;">📤</div>
+            <p style="font-size:.75rem; margin-top:.2rem;">${r.heroImage ? 'Replace image' : 'Upload room image'}</p>
+          </div>
         </div>
       </div>
     </div>`).join('');
+}
+
+async function uploadRoomImage(e, idx) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('role', 'gallery');
+  fd.append('category', 'rooms');
+  fd.append('alt', _rooms[idx].name || `Room ${idx + 1}`);
+  showAlert('rooms-alert', 'Uploading room image…', 'info');
+  try {
+    const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
+    const data = await r.json();
+    if (data.success) {
+      _rooms[idx].heroImage = data.url;
+      renderRoomsEditor(_rooms);
+      showAlert('rooms-alert', 'Image uploaded — click Save All Rooms to apply.', 'success');
+    } else {
+      showAlert('rooms-alert', `Upload failed: ${data.error}`, 'error');
+    }
+  } catch (err) {
+    showAlert('rooms-alert', `Upload error: ${err.message}`, 'error');
+  }
 }
 
 async function saveRooms() {
@@ -873,7 +905,7 @@ function renderRatesEditor(rates, notes, laundry) {
 
 async function saveRates() {
   const notes = document.getElementById('rates-notes-input').value;
-  const [r1, r2] = await Promise.all([saveContent('rates', _rates), saveContent('ratesNotes', notes)]);
+  const [r1] = await Promise.all([saveContent('rates', _rates), saveContent('ratesNotes', notes)]);
   showAlert('rates-alert', r1.success ? 'Rates saved.' : `Error: ${r1.error}`, r1.success ? 'success' : 'error');
 }
 
@@ -892,15 +924,15 @@ function renderThingsEditor(things) {
   el.innerHTML = _things.map((t, i) => `
     <div style="border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:.75rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong style="font-size:.85rem;">#${i+1}</strong>
+        <strong style="font-size:.85rem;">#${i + 1}</strong>
         <button class="btn btn-danger btn-sm" onclick="_things.splice(${i},1);renderThingsEditor(_things)">Remove</button>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Title</label><input value="${t.title||''}" oninput="_things[${i}].title=this.value" placeholder="e.g. Pennington Beaches"></div>
+        <div class="form-group"><label>Title</label><input value="${t.title || ''}" oninput="_things[${i}].title=this.value" placeholder="e.g. Pennington Beaches"></div>
         <div></div>
       </div>
       <div class="form-row full">
-        <div class="form-group"><label>Description</label><textarea oninput="_things[${i}].description=this.value" style="min-height:70px;">${t.description||''}</textarea></div>
+        <div class="form-group"><label>Description</label><textarea oninput="_things[${i}].description=this.value" style="min-height:70px;">${t.description || ''}</textarea></div>
       </div>
     </div>`).join('');
 }
@@ -918,14 +950,14 @@ async function saveThings() {
 // ─── Images ───────────────────────────────────────────────────────────────────
 
 const NAMED_IMAGE_SLOTS = [
-  { key: 'hero',             label: 'Hero Image',              hint: 'Homepage hero background. Landscape, min 1600px wide.' },
-  { key: 'ogImage',          label: 'OG / Social Share Image', hint: 'Shown when sharing links. Ideal: 1200×630px.' },
-  { key: 'farmhouse',        label: 'Farmhouse',               hint: 'Homepage intro section + About page.' },
-  { key: 'farmhouseExterior',label: 'Farmhouse Exterior',      hint: 'About page — exterior view of the building.' },
-  { key: 'kaylaAnn',         label: 'Chef Kayla Ann',          hint: 'About page — chef portrait or kitchen shot.' },
-  { key: 'dining',           label: 'Dining',                  hint: 'Experience page — dinner or food shot.' },
-  { key: 'golf',             label: 'Golf',                    hint: 'Things To Do page — golf course shot.' },
-  { key: 'whales',           label: 'Whales / Wildlife',       hint: 'Things To Do page — whale or ocean wildlife shot.' },
+  { key: 'hero',              label: 'Hero Image',              hint: 'Homepage hero background. Landscape, min 1600px wide.' },
+  { key: 'ogImage',           label: 'OG / Social Share Image', hint: 'Shown when sharing links. Ideal: 1200×630px.' },
+  { key: 'farmhouse',         label: 'Farmhouse',               hint: 'Homepage intro section + About page.' },
+  { key: 'farmhouseExterior', label: 'Farmhouse Exterior',      hint: 'About page — exterior view of the building.' },
+  { key: 'kaylaAnn',          label: 'Chef Kayla Ann',          hint: 'About page — chef portrait or kitchen shot.' },
+  { key: 'dining',            label: 'Dining',                  hint: 'Experience page — dinner or food shot.' },
+  { key: 'golf',              label: 'Golf',                    hint: 'Things To Do page — golf course shot.' },
+  { key: 'whales',            label: 'Whales / Wildlife',       hint: 'Things To Do page — whale or ocean wildlife shot.' },
 ];
 
 let _images = { hero: '', ogImage: '', farmhouse: '', farmhouseExterior: '', kaylaAnn: '', dining: '', golf: '', whales: '', gallery: [] };
@@ -933,7 +965,6 @@ let _images = { hero: '', ogImage: '', farmhouse: '', farmhouseExterior: '', kay
 function renderImagesPage(images) {
   _images = { ..._images, ...images, gallery: [...(images.gallery || [])] };
 
-  // Named slots grid
   const grid = document.getElementById('named-images-grid');
   grid.innerHTML = NAMED_IMAGE_SLOTS.map(slot => {
     const url = _images[slot.key] || '';
@@ -944,7 +975,7 @@ function renderImagesPage(images) {
         ${url
           ? `<div style="position:relative; margin-bottom:.75rem;">
                <img src="${url}" style="width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:4px; display:block;">
-               <button onclick="clearNamedImage('${slot.key}')" style="position:absolute;top:.4rem;right:.4rem;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:24px;height:24px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+               <button onclick="clearNamedImage('${slot.key}')" style="position:absolute;top:.4rem;right:.4rem;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:24px;height:24px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Remove">✕</button>
              </div>`
           : `<div style="aspect-ratio:16/9; background:var(--cream); border-radius:4px; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; color:var(--muted); font-size:.8rem;">No image yet</div>`
         }
@@ -1071,7 +1102,7 @@ function togglePending(i) {
 async function savePending() {
   const r = await saveContent('pending', _pending);
   showAlert('pending-alert', r.success ? 'Checklist saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
-  _content = null; // bust cache so dashboard stats refresh
+  _content = null;
 }
 </script>
 </body>
