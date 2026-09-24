@@ -137,10 +137,16 @@ const DEFAULTS = {
     pets: 'Pet policy to be confirmed. Please contact us directly.',
   },
   images: {
-    hero: '',
-    gallery: [], // array of { url, alt, category }
-    ogImage: '',
-  },
+  hero: '',
+  ogImage: '',
+  farmhouse: '',
+  farmhouseExterior: '',
+  kaylaAnn: '',
+  dining: '',
+  golf: '',
+  whales: '',
+  gallery: [],
+},
   pending: {
     // Debbi's outstanding items — visible in admin dashboard
     items: [
@@ -399,19 +405,22 @@ export default {
       const images = await kvGet(env, 'images', DEFAULTS.images);
 
       if (role === 'hero') {
-        images.hero = imageUrl;
-      } else if (role === 'og') {
-        images.ogImage = imageUrl;
-      } else {
-        // gallery
-        images.gallery.push({
-          url: imageUrl,
-          fileId: ikResult.fileId,
-          alt,
-          category,
-          uploadedAt: new Date().toISOString(),
-        });
-      }
+  images.hero = imageUrl;
+} else if (role === 'og') {
+  images.ogImage = imageUrl;
+} else if (role === 'named') {
+  const imageKey = formData.get('imageKey');
+  if (imageKey && imageKey in images) images[imageKey] = imageUrl;
+} else {
+  // gallery
+  images.gallery.push({
+    url: imageUrl,
+    fileId: ikResult.fileId,
+    alt,
+    category,
+    uploadedAt: new Date().toISOString(),
+  });
+}
 
       await kvSet(env, 'images', images);
 

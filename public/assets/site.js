@@ -1,9 +1,9 @@
 /**
  * Perry's @ Umdoni Point — shared site JS
- * Handles: API fetch, nav highlight, specials banner, booking form
+ * Handles: API fetch, nav highlight, specials banner, booking form, image injection
  */
 
-const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev'; // ← update after wrangler deploy
+const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev';
 
 // ─── Content loader ────────────────────────────────────────────────────────────
 
@@ -111,6 +111,41 @@ async function initGallery() {
   `).join('');
 }
 
+// ─── Named image injection ─────────────────────────────────────────────────────
+//
+// HTML elements opt in with:
+//   data-img-key="keyName"          → sets src (for <img> tags)
+//   data-bg-key="keyName"           → sets background-image (for hero divs)
+//   data-og-key="true"              → sets the og:image meta content
+//
+// Keys match images object in KV:
+//   hero, ogImage, farmhouse, farmhouseExterior, kaylaAnn, dining, golf, whales
+//
+// Falls back gracefully: if KV has no value the element keeps its existing src/style.
+
+async function initImages() {
+  const c = await getContent();
+  const imgs = (c.images) || {};
+
+  // <img data-img-key="farmhouse"> → set src from KV
+  document.querySelectorAll('[data-img-key]').forEach(el => {
+    const key = el.dataset.imgKey;
+    const url = imgs[key];
+    if (url) el.src = url;
+  });
+
+  // <div data-bg-key="hero"> → set background-image from KV
+  document.querySelectorAll('[data-bg-key]').forEach(el => {
+    const key = el.dataset.bgKey;
+    const url = imgs[key];
+    if (url) el.style.backgroundImage = `url('${url}')`;
+  });
+
+  // <meta property="og:image" data-og-key="true"> → set content from KV
+  const ogMeta = document.querySelector('meta[property="og:image"][data-og-key]');
+  if (ogMeta && imgs.ogImage) ogMeta.setAttribute('content', imgs.ogImage);
+}
+
 // ─── Booking form ──────────────────────────────────────────────────────────────
 
 function initBookingForm() {
@@ -160,7 +195,6 @@ function initNav() {
     }
   });
 
-  // Mobile hamburger
   const burger = document.getElementById('nav-burger');
   const navMenu = document.getElementById('nav-menu');
   if (burger && navMenu) {
@@ -229,6 +263,7 @@ async function initStory() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  initImages();
   initSpecialsBanner();
   initRatesTable();
   initLaundryTable();

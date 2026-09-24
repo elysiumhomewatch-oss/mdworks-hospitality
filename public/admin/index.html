@@ -472,32 +472,39 @@
         </div>
       </div>
 
-      <!-- ── IMAGES ── -->
+            <!-- ── IMAGES ── -->
       <div class="page" id="page-images">
+
         <div class="card">
-          <div class="card-title">Hero &amp; OG Images</div>
-          <div id="hero-alert"></div>
-          <div class="form-row">
-            <div>
-              <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); display:block; margin-bottom:.5rem;">Hero Image</label>
-              <div class="upload-zone" onclick="triggerUpload('hero-file')">
-                <input type="file" id="hero-file" accept="image/*" onchange="uploadImage(event,'hero')">
-                <div style="font-size:2rem;">🖼️</div>
-                <p>Click to upload hero image</p>
-              </div>
-              <div id="hero-preview" style="margin-top:.75rem;"></div>
-            </div>
-            <div>
-              <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); display:block; margin-bottom:.5rem;">OG / Social Share Image</label>
-              <div class="upload-zone" onclick="triggerUpload('og-file')">
-                <input type="file" id="og-file" accept="image/*" onchange="uploadImage(event,'og')">
-                <div style="font-size:2rem;">📣</div>
-                <p>Click to upload OG image (1200×630px ideal)</p>
-              </div>
-              <div id="og-preview" style="margin-top:.75rem;"></div>
-            </div>
-          </div>
+          <div class="card-title">Site Images</div>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.5rem;">Upload each named image below. The site falls back to its placeholder if no image is uploaded. Images are served via ImageKit CDN.</p>
+          <div id="named-images-alert"></div>
+          <div id="named-images-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:1.5rem;"></div>
         </div>
+
+        <div class="card">
+          <div class="card-title">Gallery Images</div>
+          <div id="gallery-alert"></div>
+          <div class="upload-zone" id="gallery-drop-zone" onclick="triggerUpload('gallery-file')">
+            <input type="file" id="gallery-file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
+            <div style="font-size:2rem;">📷</div>
+            <p>Click to upload gallery images (or drag and drop)</p>
+            <p style="font-size:.75rem; margin-top:.25rem;">JPEG or PNG · max 10MB per image · multiple files supported</p>
+          </div>
+          <div style="margin-top:1rem; display:flex; gap:.75rem; align-items:center;">
+            <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy);">Upload to category:</label>
+            <select id="upload-category" style="padding:.4rem .65rem; border:1px solid var(--border); border-radius:4px; font-size:.82rem; font-family:inherit;">
+              <option value="property">Property</option>
+              <option value="rooms">Rooms</option>
+              <option value="food">Food &amp; Dining</option>
+              <option value="facilities">Facilities</option>
+              <option value="surroundings">Surroundings</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div id="gallery-grid" class="img-grid"></div>
+        </div>
+      </div>
 
         <div class="card">
           <div class="card-title">Gallery Images</div>
@@ -929,45 +936,95 @@ async function saveThings() {
 
 // ─── Images ───────────────────────────────────────────────────────────────────
 
-let _images = { hero: '', ogImage: '', gallery: [] };
+const NAMED_IMAGE_SLOTS = [
+  { key: 'hero',             label: 'Hero Image',              hint: 'Homepage hero background. Landscape, min 1600px wide.' },
+  { key: 'ogImage',          label: 'OG / Social Share Image', hint: 'Shown when sharing links. Ideal: 1200×630px.' },
+  { key: 'farmhouse',        label: 'Farmhouse',               hint: 'Homepage intro section + About page.' },
+  { key: 'farmhouseExterior',label: 'Farmhouse Exterior',      hint: 'About page — exterior view of the building.' },
+  { key: 'kaylaAnn',         label: 'Chef Kayla Ann',          hint: 'About page — chef portrait or kitchen shot.' },
+  { key: 'dining',           label: 'Dining',                  hint: 'Experience page — dinner or food shot.' },
+  { key: 'golf',             label: 'Golf',                    hint: 'Things To Do page — golf course shot.' },
+  { key: 'whales',           label: 'Whales / Wildlife',       hint: 'Things To Do page — whale or ocean wildlife shot.' },
+];
+
+let _images = { hero: '', ogImage: '', farmhouse: '', farmhouseExterior: '', kaylaAnn: '', dining: '', golf: '', whales: '', gallery: [] };
 
 function renderImagesPage(images) {
-  _images = { ...images, gallery: [...(images.gallery || [])] };
-  if (_images.hero)    document.getElementById('hero-preview').innerHTML = `<img src="${_images.hero}" style="max-height:120px;border-radius:4px;">`;
-  if (_images.ogImage) document.getElementById('og-preview').innerHTML   = `<img src="${_images.ogImage}" style="max-height:80px;border-radius:4px;">`;
+  _images = { ..._images, ...images, gallery: [...(images.gallery || [])] };
+
+  // Named slots grid
+  const grid = document.getElementById('named-images-grid');
+  grid.innerHTML = NAMED_IMAGE_SLOTS.map(slot => {
+    const url = _images[slot.key] || '';
+    return `
+      <div style="border:1px solid var(--border); border-radius:6px; padding:1rem;">
+        <div style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); margin-bottom:.25rem;">${slot.label}</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-bottom:.75rem;">${slot.hint}</div>
+        ${url
+          ? `<div style="position:relative; margin-bottom:.75rem;">
+               <img src="${url}" style="width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:4px; display:block;">
+               <button onclick="clearNamedImage('${slot.key}')" style="position:absolute;top:.4rem;right:.4rem;background:rgba(0,0,0,.6);color:white;border:none;border-radius:50%;width:24px;height:24px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+             </div>`
+          : `<div style="aspect-ratio:16/9; background:var(--cream); border-radius:4px; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; color:var(--muted); font-size:.8rem;">No image yet</div>`
+        }
+        <div class="upload-zone" style="padding:1rem;" onclick="triggerUpload('named-file-${slot.key}')">
+          <input type="file" id="named-file-${slot.key}" accept="image/*" onchange="uploadNamedImage(event,'${slot.key}')">
+          <div style="font-size:1.3rem;">📤</div>
+          <p style="font-size:.78rem; margin-top:.25rem;">${url ? 'Replace image' : 'Upload image'}</p>
+        </div>
+      </div>`;
+  }).join('');
+
   renderGalleryGrid();
+}
+
+async function uploadNamedImage(e, key) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('role', key === 'ogImage' ? 'og' : key === 'hero' ? 'hero' : 'named');
+  fd.append('imageKey', key);
+  fd.append('alt', NAMED_IMAGE_SLOTS.find(s => s.key === key)?.label || key);
+  showAlert('named-images-alert', 'Uploading…', 'info');
+  try {
+    const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
+    const data = await r.json();
+    if (data.success) {
+      _content = null;
+      const c = await getContent();
+      renderImagesPage(c.images || {});
+      showAlert('named-images-alert', `${NAMED_IMAGE_SLOTS.find(s => s.key === key)?.label} uploaded.`, 'success');
+    } else {
+      showAlert('named-images-alert', `Upload failed: ${data.error}`, 'error');
+    }
+  } catch (err) {
+    showAlert('named-images-alert', `Upload error: ${err.message}`, 'error');
+  }
+}
+
+async function clearNamedImage(key) {
+  if (!confirm(`Remove the ${key} image?`)) return;
+  const c = await getContent();
+  const images = { ...(c.images || {}), [key]: '' };
+  const r = await saveContent('images', images);
+  if (r.success) {
+    _content = null;
+    const fresh = await getContent();
+    renderImagesPage(fresh.images || {});
+  }
 }
 
 function renderGalleryGrid() {
   const el = document.getElementById('gallery-grid');
   el.innerHTML = (_images.gallery || []).map((img, i) => `
     <div class="img-thumb">
-      <img src="${img.url}" alt="${img.alt||''}">
+      <img src="${img.url}" alt="${img.alt || ''}">
       <button class="img-thumb-del" onclick="deleteGalleryImage('${img.fileId}', ${i})" title="Remove">✕</button>
     </div>`).join('') || '<p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;">No gallery images yet.</p>';
 }
 
 function triggerUpload(id) { document.getElementById(id).click(); }
-
-async function uploadImage(e, role) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('role', role);
-  fd.append('alt', role === 'hero' ? 'Perry\'s @ Umdoni Point hero image' : 'Perry\'s social share image');
-  showAlert('hero-alert', 'Uploading…', 'info');
-  const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
-  const data = await r.json();
-  if (data.success) {
-    _content = null; // bust cache
-    const c = await getContent();
-    renderImagesPage(c.images || {});
-    showAlert('hero-alert', 'Image uploaded.', 'success');
-  } else {
-    showAlert('hero-alert', `Upload failed: ${data.error}`, 'error');
-  }
-}
 
 async function uploadGalleryImages(e) {
   const files = Array.from(e.target.files);
