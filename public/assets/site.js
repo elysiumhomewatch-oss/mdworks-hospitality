@@ -185,6 +185,22 @@ function initBookingForm() {
   });
 }
 
+// ─── Site identity (logo) ─────────────────────────────────────────────────────
+//
+// If siteIdentity.logoImage is set in KV, replace the text "Perry's" in every
+// .nav-logo anchor with an <img> tag. Falls back to the existing text if empty.
+
+async function initSiteIdentity() {
+  const c = await getContent();
+  const identity = c.siteIdentity || {};
+  if (!identity.logoImage) return;
+
+  document.querySelectorAll('.nav-logo').forEach(el => {
+    // Preserve the href and aria-label; replace inner content with img
+    el.innerHTML = `<img src="${identity.logoImage}" alt="${identity.siteName || "Perry's @ Umdoni Point"}" class="nav-logo-img">`;
+  });
+}
+
 // ─── Nav active state ──────────────────────────────────────────────────────────
 
 function initNav() {
@@ -264,6 +280,7 @@ async function initStory() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  initSiteIdentity();
   initImages();
   initSpecialsBanner();
   initRatesTable();

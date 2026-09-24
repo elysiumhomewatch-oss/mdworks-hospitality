@@ -92,7 +92,7 @@ h1, h2, h3, h4 {
   font-weight: 700;
 }
 .nav-logo:hover { color: var(--gold-lt); }
-.nav-logo img { height: 40px; width: auto; }
+.nav-logo img, .nav-logo-img { height: 40px; width: auto; display: block; }
 
 #nav-menu {
   display: flex;

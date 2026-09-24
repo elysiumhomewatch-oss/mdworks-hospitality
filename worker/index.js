@@ -147,6 +147,12 @@ const DEFAULTS = {
   whales: '',
   gallery: [],
 },
+  siteIdentity: {
+    logoImage: '',      // URL of uploaded logo (served via ImageKit)
+    siteName: "Perry's @ Umdoni Point",
+    tagline: 'Boutique Coastal Forest Getaway',
+    footerTagline: 'Boutique Coastal Forest Getaway in the historic Barker Farmhouse, Pennington, KwaZulu-Natal South Coast.',
+  },
   pending: {
     // Debbi's outstanding items — visible in admin dashboard
     items: [
@@ -405,7 +411,13 @@ export default {
       // Store URL in KV under images key
       const images = await kvGet(env, 'images', DEFAULTS.images);
 
-      if (role === 'hero') {
+      if (role === 'logo') {
+  // Store logo URL in siteIdentity KV key (not in images)
+  const siteIdentity = await kvGet(env, 'siteIdentity', DEFAULTS.siteIdentity);
+  siteIdentity.logoImage = imageUrl;
+  await kvSet(env, 'siteIdentity', siteIdentity);
+  return json({ success: true, url: imageUrl, fileId: ikResult.fileId });
+} else if (role === 'hero') {
   images.hero = imageUrl;
 } else if (role === 'og') {
   images.ogImage = imageUrl;

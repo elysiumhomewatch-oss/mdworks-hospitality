@@ -353,6 +353,30 @@
 
       <!-- ── META / SITE SETTINGS ── -->
       <div class="page" id="page-meta">
+
+        <!-- Logo upload card -->
+        <div class="card">
+          <div class="card-title">Site Logo</div>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:.5rem;">Upload your logo to display it in the navigation bar on every page. If no logo is uploaded, the site shows the text "Perry's" instead.</p>
+          <p style="color:var(--muted); font-size:.78rem; margin-bottom:1.25rem;">
+            💡 <strong>Recommended:</strong> PNG with transparent background · 400×160 px or similar wide format · max 500 KB
+          </p>
+          <div id="logo-alert"></div>
+          <div id="logo-preview-wrap" style="margin-bottom:1rem; display:none;">
+            <div style="display:inline-flex; align-items:center; gap:1rem; background:var(--navy); padding:.75rem 1.25rem; border-radius:6px;">
+              <img id="logo-preview-img" src="" alt="Current logo" style="max-height:48px; max-width:200px; object-fit:contain;">
+              <button class="btn btn-sm btn-danger" onclick="clearLogo()">Remove logo</button>
+            </div>
+            <p style="font-size:.75rem; color:var(--muted); margin-top:.5rem;">Preview shown on navy background (matches the nav bar).</p>
+          </div>
+          <div class="upload-zone" style="max-width:400px;" onclick="triggerLogoUpload()">
+            <input type="file" id="logo-file" accept="image/png,image/svg+xml,image/jpeg,image/webp" onchange="uploadLogo(event)">
+            <div style="font-size:1.5rem;">🖼️</div>
+            <p id="logo-upload-label">Upload logo (PNG, SVG, JPG, WebP)</p>
+            <p style="font-size:.72rem; margin-top:.25rem;">Recommended: 400×160 px · transparent PNG</p>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-title">Site Settings</div>
           <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.5rem;">These details appear throughout the site and in WhatsApp booking messages.</p>
@@ -618,7 +642,7 @@ async function loadPage(page) {
   const c = await getContent();
   if (page === 'dashboard')  renderDashboard(c);
   if (page === 'bookings')   renderBookings();
-  if (page === 'meta')       fillForm('meta-form', c.meta || {});
+  if (page === 'meta')       { fillForm('meta-form', c.meta || {}); renderLogoPreview(c.siteIdentity || {}); }
   if (page === 'specials')   fillForm('specials-form', c.specials || {});
   if (page === 'story')      fillForm('story-form', c.story || {});
   if (page === 'rooms')      renderRoomsEditor(c.rooms || []);
@@ -762,6 +786,67 @@ function showAlert(id, msg, type = 'success') {
   if (!el) return;
   el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
   setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+// ─── Logo ─────────────────────────────────────────────────────────────────────
+
+function renderLogoPreview(identity) {
+  const wrap = document.getElementById('logo-preview-wrap');
+  const img  = document.getElementById('logo-preview-img');
+  const lbl  = document.getElementById('logo-upload-label');
+  if (identity && identity.logoImage) {
+    img.src = identity.logoImage;
+    wrap.style.display = 'block';
+    lbl.textContent = 'Replace logo';
+  } else {
+    wrap.style.display = 'none';
+    lbl.textContent = 'Upload logo (PNG, SVG, JPG, WebP)';
+  }
+}
+
+function triggerLogoUpload() {
+  document.getElementById('logo-file').click();
+}
+
+async function uploadLogo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('role', 'logo');
+  fd.append('alt', "Perry's @ Umdoni Point logo");
+  showAlert('logo-alert', 'Uploading logo…', 'info');
+  try {
+    const r = await fetch(`${API}/api/admin/image`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      body: fd,
+    });
+    const data = await r.json();
+    if (data.success) {
+      _content = null;
+      const c = await getContent();
+      renderLogoPreview(c.siteIdentity || {});
+      showAlert('logo-alert', 'Logo uploaded successfully.', 'success');
+    } else {
+      showAlert('logo-alert', `Upload failed: ${data.error}`, 'error');
+    }
+  } catch (err) {
+    showAlert('logo-alert', `Upload error: ${err.message}`, 'error');
+  }
+}
+
+async function clearLogo() {
+  if (!confirm('Remove the logo? The site will show the text "Perry\'s" instead.')) return;
+  const c = await getContent();
+  const identity = { ...(c.siteIdentity || {}), logoImage: '' };
+  const r = await saveContent('siteIdentity', identity);
+  if (r.success) {
+    _content = null;
+    const fresh = await getContent();
+    renderLogoPreview(fresh.siteIdentity || {});
+    showAlert('logo-alert', 'Logo removed.', 'success');
+  }
 }
 
 // ─── Meta ─────────────────────────────────────────────────────────────────────
