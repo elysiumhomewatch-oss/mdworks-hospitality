@@ -219,7 +219,8 @@ async function uploadToImageKit(env, fileBuffer, fileName, folder = '/perrys') {
 // ─── Booking helpers ──────────────────────────────────────────────────────────
 
 function buildWhatsAppUrl(whatsapp, booking) {
-  const num = whatsapp.replace(/\D/g, '');
+  const raw = whatsapp.replace(/\D/g, '');
+const num = raw.startsWith('0') ? '27' + raw.slice(1) : raw;
   const msg = [
     `*New Booking Request — Perry's @ Umdoni Point*`,
     ``,

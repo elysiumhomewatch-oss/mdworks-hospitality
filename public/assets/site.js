@@ -212,9 +212,10 @@ async function initContactInfo() {
   const meta = c.meta || {};
   document.querySelectorAll('[data-phone]').forEach(el => { el.textContent = meta.phone || 'TBC'; });
   document.querySelectorAll('[data-whatsapp-link]').forEach(el => {
-    const num = (meta.whatsapp || '').replace(/\D/g, '');
-    if (num) el.href = `https://wa.me/${num}`;
-  });
+  const raw = (meta.whatsapp || '').replace(/\D/g, '');
+  const num = raw.startsWith('0') ? '27' + raw.slice(1) : raw;
+  if (num) el.href = `https://wa.me/${num}`;
+});
   document.querySelectorAll('[data-email]').forEach(el => { el.textContent = meta.email || 'TBC'; });
   document.querySelectorAll('[data-instagram]').forEach(el => {
     if (meta.instagram) { el.href = meta.instagram; el.style.display = ''; }
