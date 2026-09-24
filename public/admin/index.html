@@ -734,6 +734,8 @@ document.querySelectorAll('.filter-status').forEach(btn => {
 });
 
 async function openBookingDetail(id) {
+  // Navigate to bookings page first so the detail panel is visible
+  navigateTo('bookings');
   const booking = await apiFetch(`/api/booking/${id}`);
   const el = document.getElementById('booking-detail-body');
   el.innerHTML = `
@@ -748,7 +750,9 @@ async function openBookingDetail(id) {
       <button class="btn btn-sm btn-danger" onclick="deleteBooking('${id}')">Delete</button>
     </div>`;
   document.getElementById('booking-detail').style.display = 'block';
-  document.getElementById('booking-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => {
+    document.getElementById('booking-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 function closeBookingDetail() {
