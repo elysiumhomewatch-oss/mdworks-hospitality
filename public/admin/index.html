@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Admin | Perry's @ Umdoni Point</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:   #1B2A4A;
+      --gold:   #C9A84C;
+      --cream:  #F5F1EB;
+      --white:  #FFFFFF;
+      --text:   #2C2C2C;
+      --muted:  #6B6B6B;
+      --border: #E0D9CE;
+      --green:  #2d6a3f;
+      --red:    #922;
+      --sidebar-w: 220px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Montserrat', system-ui, sans-serif; background: #f0ece6; color: var(--text); font-size: 14px; }
+    a { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ── */
+    #app { display: flex; min-height: 100vh; }
+    #sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+    }
+    .sidebar-logo {
+      padding: 1.25rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: .95rem;
+      line-height: 1.3;
+    }
+    .sidebar-logo small { display: block; font-family: 'Montserrat', sans-serif; font-size: .7rem; color: rgba(255,255,255,.5); font-weight: 500; margin-top: .2rem; }
+    nav.sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+    .nav-section { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.35); padding: .75rem 1.2rem .3rem; }
+    .nav-item {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .6rem 1.2rem;
+      color: rgba(255,255,255,.75);
+      font-size: .82rem; font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+    .nav-item.active { background: rgba(201,168,76,.12); color: var(--gold); border-left-color: var(--gold); }
+    .nav-item .icon { width: 16px; text-align: center; font-size: 1rem; }
+    .sidebar-footer { padding: 1rem 1.2rem; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer a { color: rgba(255,255,255,.5); font-size: .75rem; }
+    .sidebar-footer a:hover { color: var(--gold); }
+
+    #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+    #topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 40;
+    }
+    #topbar h1 { font-size: 1rem; font-weight: 600; color: var(--navy); }
+    #topbar-actions { display: flex; align-items: center; gap: 1rem; }
+    .topbar-link { font-size: .8rem; color: var(--muted); }
+    .topbar-link:hover { color: var(--gold); }
+
+    #content { padding: 2rem; flex: 1; }
+
+    /* ── Cards ── */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--gold); margin-bottom: 1rem; }
+    .card h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--navy); margin-bottom: 1rem; }
+
+    /* ── Stat strip ── */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1.2rem 1.5rem; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--navy); line-height: 1; }
+    .stat-label { font-size: .72rem; color: var(--muted); margin-top: .3rem; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Pending checklist ── */
+    .pending-list { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+    .pending-item { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; border-radius: 4px; cursor: pointer; transition: background .15s; }
+    .pending-item:hover { background: var(--cream); }
+    .pending-item input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--navy); cursor: pointer; flex-shrink: 0; }
+    .pending-item label { font-size: .85rem; cursor: pointer; flex: 1; }
+    .pending-item.done label { text-decoration: line-through; color: var(--muted); }
+
+    /* ── Forms ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: .3rem; }
+    .form-group label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--navy); }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: .55rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: .85rem;
+      color: var(--text);
+      background: #faf9f7;
+      transition: border-color .15s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: var(--gold); background: var(--white);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem 1.1rem; border-radius: 4px; font-family: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
+    .btn-primary { background: var(--navy); color: var(--white); }
+    .btn-primary:hover { background: #253c6b; }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: #e6c97a; }
+    .btn-danger { background: #fde8e8; color: var(--red); }
+    .btn-danger:hover { background: #f9c8c8; }
+    .btn-sm { padding: .3rem .7rem; font-size: .75rem; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* ── Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .data-table th { text-align: left; padding: .6rem .75rem; background: var(--cream); font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; color: var(--navy); font-weight: 700; border-bottom: 2px solid var(--border); }
+    .data-table td { padding: .65rem .75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .data-table tr:hover td { background: #faf9f7; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Status badges ── */
+    .badge { display: inline-block; padding: .2rem .6rem; border-radius: 2rem; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .badge-pending   { background: #fff3cd; color: #856404; }
+    .badge-confirmed { background: #d1f0db; color: var(--green); }
+    .badge-cancelled { background: #fde8e8; color: var(--red); }
+
+    /* ── Alerts ── */
+    .alert { padding: .65rem 1rem; border-radius: 4px; font-size: .82rem; margin-bottom: 1rem; }
+    .alert-success { background: #e6f4ea; color: var(--green); }
+    .alert-error   { background: #fde8e8; color: var(--red); }
+    .alert-info    { background: #e8f0fe; color: #1a56c4; }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--gold); background: #faf7ee; }
+    .upload-zone input { display: none; }
+    .upload-zone p { color: var(--muted); font-size: .85rem; margin-top: .5rem; }
+
+    /* ── Image grid ── */
+    .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .img-thumb { position: relative; border-radius: 4px; overflow: hidden; aspect-ratio: 4/3; background: var(--cream); }
+    .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .img-thumb-del {
+      position: absolute; top: .4rem; right: .4rem;
+      background: rgba(0,0,0,.6); color: white;
+      border: none; border-radius: 50%;
+      width: 24px; height: 24px;
+      font-size: .9rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .15s;
+    }
+    .img-thumb:hover .img-thumb-del { opacity: 1; }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1.5rem; }
+    .tab { padding: .6rem 1.2rem; font-size: .82rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+    .tab:hover { color: var(--navy); }
+    .tab.active { color: var(--navy); border-bottom-color: var(--gold); }
+
+    /* ── Rates editor ── */
+    .rate-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: .75rem; align-items: center; margin-bottom: .5rem; }
+    .rate-row input { padding: .45rem .65rem; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: .82rem; }
+
+    /* ── Rooms editor ── */
+    .room-editor-row { border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+    .room-editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-weight: 600; }
+
+    /* ── Pages ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── Login screen ── */
+    #login-screen {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200;
+    }
+    .login-box {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 2.5rem;
+      width: 360px;
+      text-align: center;
+    }
+    .login-box h1 { font-family: 'Playfair Display', serif; color: var(--navy); font-size: 1.4rem; margin-bottom: .3rem; }
+    .login-box p { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: .65rem .9rem; border: 1px solid var(--border);
+      border-radius: 4px; font-size: .9rem; margin-bottom: 1rem; font-family: inherit;
+    }
+    .login-box input:focus { outline: none; border-color: var(--gold); }
+    .login-error { color: var(--red); font-size: .82rem; margin-bottom: .75rem; display: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      #sidebar { display: none; }
+      #main { margin-left: 0; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Perry's Admin</h1>
+    <p>Enter your admin password to continue</p>
+    <input type="password" id="token-input" placeholder="Admin password" autocomplete="current-password">
+    <p class="login-error" id="login-error">Incorrect password — please try again.</p>
+    <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      Perry's<br>@ Umdoni Point
+      <small>Admin Dashboard</small>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-section">Bookings</div>
+      <div class="nav-item" data-page="bookings">
+        <span class="icon">📅</span> All Bookings
+      </div>
+      <div class="nav-section">Content</div>
+      <div class="nav-item" data-page="meta">
+        <span class="icon">⚙️</span> Site Settings
+      </div>
+      <div class="nav-item" data-page="specials">
+        <span class="icon">🏷️</span> Specials Banner
+      </div>
+      <div class="nav-item" data-page="story">
+        <span class="icon">📖</span> Our Story
+      </div>
+      <div class="nav-item" data-page="rooms">
+        <span class="icon">🛏️</span> Rooms
+      </div>
+      <div class="nav-item" data-page="rates">
+        <span class="icon">💰</span> Rates
+      </div>
+      <div class="nav-item" data-page="things">
+        <span class="icon">🗺️</span> Things To Do
+      </div>
+      <div class="nav-item" data-page="images">
+        <span class="icon">🖼️</span> Images
+      </div>
+      <div class="nav-section">Admin</div>
+      <div class="nav-item" data-page="pending">
+        <span class="icon">✅</span> Pending Items
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/" target="_blank">↗ View Public Site</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main">
+    <div id="topbar">
+      <h1 id="topbar-title">Dashboard</h1>
+      <div id="topbar-actions">
+        <a href="/" target="_blank" class="topbar-link">View Site ↗</a>
+        <button class="btn btn-outline btn-sm" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats" id="stat-strip">
+          <div class="stat"><div class="stat-value" id="stat-pending">—</div><div class="stat-label">Pending Bookings</div></div>
+          <div class="stat"><div class="stat-value" id="stat-confirmed">—</div><div class="stat-label">Confirmed</div></div>
+          <div class="stat"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total Bookings</div></div>
+          <div class="stat"><div class="stat-value" id="stat-checklist">—</div><div class="stat-label">Pending Items Left</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Recent Bookings</div>
+          <table class="data-table" id="recent-bookings-table">
+            <thead><tr><th>Name</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="5" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Outstanding Items (Debbi's Checklist)</div>
+          <ul class="pending-list" id="dash-pending-list"></ul>
+        </div>
+      </div>
+
+      <!-- ── BOOKINGS ── -->
+      <div class="page" id="page-bookings">
+        <div class="card">
+          <div class="card-title">All Bookings</div>
+          <div style="display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm filter-status active" data-status="all">All</button>
+            <button class="btn btn-outline btn-sm filter-status" data-status="pending">Pending</button>
+            <button class="btn btn-outline btn-sm filter-status" data-status="confirmed">Confirmed</button>
+            <button class="btn btn-outline btn-sm filter-status" data-status="cancelled">Cancelled</button>
+          </div>
+          <table class="data-table" id="bookings-table">
+            <thead><tr><th>Ref</th><th>Name</th><th>Phone</th><th>Check-In</th><th>Check-Out</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="8" style="color:var(--muted);">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- Booking detail panel -->
+        <div class="card" id="booking-detail" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div class="card-title" style="margin:0;">Booking Detail</div>
+            <button class="btn btn-outline btn-sm" onclick="closeBookingDetail()">✕ Close</button>
+          </div>
+          <div id="booking-detail-body"></div>
+        </div>
+      </div>
+
+      <!-- ── META / SITE SETTINGS ── -->
+      <div class="page" id="page-meta">
+        <div class="card">
+          <div class="card-title">Site Settings</div>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.5rem;">These details appear throughout the site and in WhatsApp booking messages.</p>
+          <div id="meta-alert"></div>
+          <form id="meta-form" onsubmit="saveMeta(event)">
+            <div class="form-row">
+              <div class="form-group"><label>Phone</label><input type="tel" name="phone" placeholder="+27 xx xxx xxxx"></div>
+              <div class="form-group"><label>WhatsApp (used for booking messages)</label><input type="tel" name="whatsapp" placeholder="+27 xx xxx xxxx"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="hello@perrys.co.za"></div>
+              <div class="form-group"><label>Full Address</label><input type="text" name="address" placeholder="Umdoni Point, Pennington, KZN"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Instagram URL</label><input type="url" name="instagram" placeholder="https://instagram.com/..."></div>
+              <div class="form-group"><label>Facebook URL</label><input type="url" name="facebook" placeholder="https://facebook.com/..."></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Google Maps Embed (full iframe HTML)</label><textarea name="googleMapsEmbed" style="min-height:70px;" placeholder='&lt;iframe src="https://maps.google.com/..."&gt;&lt;/iframe&gt;'></textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── SPECIALS BANNER ── -->
+      <div class="page" id="page-specials">
+        <div class="card">
+          <div class="card-title">Specials Banner</div>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.5rem;">The banner appears at the very top of every page when active.</p>
+          <div id="specials-alert"></div>
+          <form id="specials-form" onsubmit="saveSpecials(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Active</label>
+                <select name="active">
+                  <option value="true">Yes — show banner</option>
+                  <option value="false">No — hide banner</option>
+                </select>
+              </div>
+              <div class="form-group"><label>CTA Label</label><input type="text" name="ctaLabel" placeholder="View Rates"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Banner Title</label><input type="text" name="title" placeholder="September 2026 Opening Special"></div>
+              <div class="form-group"><label>CTA Link</label><input type="text" name="ctaLink" placeholder="/rates/"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Banner Body Text</label><textarea name="body" placeholder="Celebrate our grand opening with exclusive rates…"></textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Banner</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── STORY ── -->
+      <div class="page" id="page-story">
+        <div class="card">
+          <div class="card-title">Our Story</div>
+          <div id="story-alert"></div>
+          <form id="story-form" onsubmit="saveStory(event)">
+            <div class="form-row full">
+              <div class="form-group"><label>Headline</label><input type="text" name="headline" placeholder="A Historic South Coast Retreat"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body Text (separate paragraphs with a blank line)</label><textarea name="body" style="min-height:200px;"></textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Story</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── ROOMS ── -->
+      <div class="page" id="page-rooms">
+        <div class="card">
+          <div class="card-title">Rooms</div>
+          <div id="rooms-alert"></div>
+          <div id="rooms-editor"></div>
+          <button class="btn btn-primary" onclick="saveRooms()">Save All Rooms</button>
+        </div>
+      </div>
+
+      <!-- ── RATES ── -->
+      <div class="page" id="page-rates">
+        <div class="card">
+          <div class="card-title">Accommodation Rates</div>
+          <div id="rates-alert"></div>
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:.75rem; margin-bottom:.5rem; padding: .4rem .65rem; background:var(--cream); border-radius:4px;">
+            <span style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--navy);">Package</span>
+            <span style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--navy);">Standard</span>
+            <span style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--navy);">Weekend</span>
+            <span style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--navy);">Peak</span>
+          </div>
+          <div id="rates-editor"></div>
+          <div style="margin-top:1rem;">
+            <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); display:block; margin-bottom:.3rem;">Peak Season Note</label>
+            <input type="text" id="rates-notes-input" style="width:100%; padding:.55rem .75rem; border:1px solid var(--border); border-radius:4px; font-size:.85rem; font-family:inherit;" placeholder="Peak season: December and public/school holiday periods.">
+          </div>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="saveRates()">Save Rates</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Laundry Prices</div>
+          <div id="laundry-alert"></div>
+          <div id="laundry-editor"></div>
+          <button class="btn btn-primary" style="margin-top:.5rem;" onclick="saveLaundry()">Save Laundry Prices</button>
+        </div>
+      </div>
+
+      <!-- ── THINGS TO DO ── -->
+      <div class="page" id="page-things">
+        <div class="card">
+          <div class="card-title">Things To Do</div>
+          <div id="things-alert"></div>
+          <div id="things-editor"></div>
+          <button class="btn btn-outline btn-sm" onclick="addThing()" style="margin-bottom:1rem;">+ Add Item</button><br>
+          <button class="btn btn-primary" onclick="saveThings()">Save</button>
+        </div>
+      </div>
+
+      <!-- ── IMAGES ── -->
+      <div class="page" id="page-images">
+        <div class="card">
+          <div class="card-title">Hero &amp; OG Images</div>
+          <div id="hero-alert"></div>
+          <div class="form-row">
+            <div>
+              <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); display:block; margin-bottom:.5rem;">Hero Image</label>
+              <div class="upload-zone" onclick="triggerUpload('hero-file')">
+                <input type="file" id="hero-file" accept="image/*" onchange="uploadImage(event,'hero')">
+                <div style="font-size:2rem;">🖼️</div>
+                <p>Click to upload hero image</p>
+              </div>
+              <div id="hero-preview" style="margin-top:.75rem;"></div>
+            </div>
+            <div>
+              <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); display:block; margin-bottom:.5rem;">OG / Social Share Image</label>
+              <div class="upload-zone" onclick="triggerUpload('og-file')">
+                <input type="file" id="og-file" accept="image/*" onchange="uploadImage(event,'og')">
+                <div style="font-size:2rem;">📣</div>
+                <p>Click to upload OG image (1200×630px ideal)</p>
+              </div>
+              <div id="og-preview" style="margin-top:.75rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Gallery Images</div>
+          <div id="gallery-alert"></div>
+          <div class="upload-zone" id="gallery-drop-zone" onclick="triggerUpload('gallery-file')">
+            <input type="file" id="gallery-file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
+            <div style="font-size:2rem;">📷</div>
+            <p>Click to upload gallery images (or drag and drop)</p>
+            <p style="font-size:.75rem; margin-top:.25rem;">JPEG or PNG · max 10MB per image · multiple files supported</p>
+          </div>
+          <div style="margin-top:1rem; display:flex; gap:.75rem; align-items:center;">
+            <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy);">Upload to category:</label>
+            <select id="upload-category" style="padding:.4rem .65rem; border:1px solid var(--border); border-radius:4px; font-size:.82rem; font-family:inherit;">
+              <option value="property">Property</option>
+              <option value="rooms">Rooms</option>
+              <option value="food">Food &amp; Dining</option>
+              <option value="facilities">Facilities</option>
+              <option value="surroundings">Surroundings</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div id="gallery-grid" class="img-grid"></div>
+        </div>
+      </div>
+
+      <!-- ── PENDING ── -->
+      <div class="page" id="page-pending">
+        <div class="card">
+          <div class="card-title">Debbi's Outstanding Items Checklist</div>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.25rem;">Track what's still needed before the site is fully live. Check items off as they're resolved.</p>
+          <div id="pending-alert"></div>
+          <ul class="pending-list" id="pending-list"></ul>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="savePending()">Save Checklist</button>
+        </div>
+      </div>
+
+    </div><!-- /#content -->
+  </div><!-- /#main -->
+</div><!-- /#app -->
+
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev'; // ← update after deploy
+let TOKEN = '';
+let _content = null;
+let _bookings = null;
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+function doLogin() {
+  const val = document.getElementById('token-input').value.trim();
+  if (!val) return;
+  TOKEN = val;
+  // Verify by fetching bookings
+  fetch(`${API}/api/bookings`, { headers: { Authorization: `Bearer ${TOKEN}` } })
+    .then(r => {
+      if (r.status === 401) {
+        document.getElementById('login-error').style.display = 'block';
+        TOKEN = '';
+      } else {
+        sessionStorage.setItem('admin_token', TOKEN);
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        initAdmin();
+      }
+    })
+    .catch(() => { document.getElementById('login-error').style.display = 'block'; TOKEN = ''; });
+}
+
+document.getElementById('token-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// Check for saved session
+const saved = sessionStorage.getItem('admin_token');
+if (saved) {
+  TOKEN = saved;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  setTimeout(initAdmin, 0);
+}
+
+function signOut() {
+  sessionStorage.removeItem('admin_token');
+  location.reload();
+}
+
+// ─── API helpers ──────────────────────────────────────────────────────────────
+
+async function apiFetch(path, opts = {}) {
+  const r = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${TOKEN}`, ...(opts.headers || {}) },
+  });
+  return r.json();
+}
+
+async function getContent() {
+  if (_content) return _content;
+  const r = await fetch(`${API}/api/content`);
+  _content = await r.json();
+  return _content;
+}
+
+async function saveContent(key, value) {
+  const r = await apiFetch('/api/admin/content', { method: 'POST', body: JSON.stringify({ key, value }) });
+  if (r.success && _content) _content[key] = value;
+  return r;
+}
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+
+const titles = {
+  dashboard: 'Dashboard', bookings: 'All Bookings', meta: 'Site Settings',
+  specials: 'Specials Banner', story: 'Our Story', rooms: 'Rooms',
+  rates: 'Rates', things: 'Things To Do', images: 'Images', pending: 'Pending Items',
+};
+
+document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+  el.addEventListener('click', () => navigateTo(el.dataset.page));
+});
+
+function navigateTo(page) {
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+  document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+  document.getElementById(`page-${page}`)?.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  loadPage(page);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+async function initAdmin() {
+  await Promise.all([loadBookings(), getContent()]);
+  loadPage('dashboard');
+}
+
+async function loadPage(page) {
+  const c = await getContent();
+  if (page === 'dashboard')  renderDashboard(c);
+  if (page === 'bookings')   renderBookings();
+  if (page === 'meta')       fillForm('meta-form', c.meta || {});
+  if (page === 'specials')   fillForm('specials-form', c.specials || {});
+  if (page === 'story')      fillForm('story-form', c.story || {});
+  if (page === 'rooms')      renderRoomsEditor(c.rooms || []);
+  if (page === 'rates')      renderRatesEditor(c.rates || [], c.ratesNotes || '', c.laundry || []);
+  if (page === 'things')     renderThingsEditor(c.thingsToDo || []);
+  if (page === 'images')     renderImagesPage(c.images || {});
+  if (page === 'pending')    renderPendingPage(c.pending || { items: [] });
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+
+function renderDashboard(c) {
+  const bookings = _bookings || [];
+  const pending = bookings.filter(b => b.status === 'pending').length;
+  const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+  const pendingItems = (c.pending?.items || []).filter(i => !i.done).length;
+
+  document.getElementById('stat-pending').textContent   = pending;
+  document.getElementById('stat-confirmed').textContent = confirmed;
+  document.getElementById('stat-total').textContent     = bookings.length;
+  document.getElementById('stat-checklist').textContent = pendingItems;
+
+  // Recent bookings
+  const tbody = document.querySelector('#recent-bookings-table tbody');
+  const recent = bookings.slice(0, 8);
+  tbody.innerHTML = recent.length
+    ? recent.map(b => `
+        <tr>
+          <td>${b.name}</td>
+          <td>${b.checkIn}</td>
+          <td>${b.checkOut}</td>
+          <td><span class="badge badge-${b.status}">${b.status}</span></td>
+          <td><button class="btn btn-outline btn-sm" onclick="openBookingDetail('${b.id}')">View</button></td>
+        </tr>`).join('')
+    : '<tr><td colspan="5" style="color:var(--muted);">No bookings yet</td></tr>';
+
+  // Pending checklist preview
+  const ul = document.getElementById('dash-pending-list');
+  ul.innerHTML = (c.pending?.items || []).map(i => `
+    <li class="pending-item ${i.done ? 'done' : ''}">
+      <input type="checkbox" ${i.done ? 'checked' : ''} disabled>
+      <label>${i.label}</label>
+      ${i.done ? '<span style="color:var(--green);font-size:.75rem;">✓</span>' : ''}
+    </li>`).join('');
+}
+
+// ─── Bookings ─────────────────────────────────────────────────────────────────
+
+async function loadBookings() {
+  const data = await apiFetch('/api/bookings');
+  _bookings = Array.isArray(data) ? data : [];
+}
+
+let _bookingFilter = 'all';
+
+function renderBookings() {
+  const bookings = _bookings || [];
+  const filtered = _bookingFilter === 'all' ? bookings : bookings.filter(b => b.status === _bookingFilter);
+  const tbody = document.querySelector('#bookings-table tbody');
+  tbody.innerHTML = filtered.length
+    ? filtered.map(b => `
+        <tr>
+          <td style="font-size:.72rem; color:var(--muted);">${b.id.slice(-6)}</td>
+          <td>${b.name}</td>
+          <td>${b.phone || '—'}</td>
+          <td>${b.checkIn}</td>
+          <td>${b.checkOut}</td>
+          <td>${b.guests || '—'}</td>
+          <td><span class="badge badge-${b.status}">${b.status}</span></td>
+          <td style="display:flex; gap:.4rem; flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="openBookingDetail('${b.id}')">View</button>
+            ${b.status !== 'confirmed' ? `<button class="btn btn-sm" style="background:#d1f0db;color:var(--green);" onclick="updateStatus('${b.id}','confirmed')">Confirm</button>` : ''}
+            ${b.status !== 'cancelled' ? `<button class="btn btn-sm btn-danger" onclick="updateStatus('${b.id}','cancelled')">Cancel</button>` : ''}
+          </td>
+        </tr>`).join('')
+    : `<tr><td colspan="8" style="color:var(--muted);">No ${_bookingFilter !== 'all' ? _bookingFilter : ''} bookings</td></tr>`;
+}
+
+document.querySelectorAll('.filter-status').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _bookingFilter = btn.dataset.status;
+    renderBookings();
+  });
+});
+
+async function openBookingDetail(id) {
+  const booking = await apiFetch(`/api/booking/${id}`);
+  const el = document.getElementById('booking-detail-body');
+  el.innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+      ${Object.entries(booking).filter(([k]) => !['id','createdAt'].includes(k)).map(([k,v]) => `
+        <div><label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);">${k}</label>
+        <p style="font-size:.9rem;">${v || '—'}</p></div>`).join('')}
+    </div>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      ${booking.status !== 'confirmed' ? `<button class="btn btn-sm" style="background:#d1f0db;color:var(--green);" onclick="updateStatus('${id}','confirmed')">Mark Confirmed</button>` : ''}
+      ${booking.status !== 'cancelled' ? `<button class="btn btn-sm btn-danger" onclick="updateStatus('${id}','cancelled')">Mark Cancelled</button>` : ''}
+      <button class="btn btn-sm btn-danger" onclick="deleteBooking('${id}')">Delete</button>
+    </div>`;
+  document.getElementById('booking-detail').style.display = 'block';
+  document.getElementById('booking-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeBookingDetail() {
+  document.getElementById('booking-detail').style.display = 'none';
+}
+
+async function updateStatus(id, status) {
+  await apiFetch(`/api/admin/booking/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+  await loadBookings();
+  renderBookings();
+  closeBookingDetail();
+}
+
+async function deleteBooking(id) {
+  if (!confirm('Delete this booking? This cannot be undone.')) return;
+  await apiFetch(`/api/admin/booking/${id}`, { method: 'DELETE' });
+  await loadBookings();
+  renderBookings();
+  closeBookingDetail();
+}
+
+// ─── Form helpers ─────────────────────────────────────────────────────────────
+
+function fillForm(formId, data) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  Object.entries(data).forEach(([k, v]) => {
+    const el = form.elements[k];
+    if (!el) return;
+    if (el.tagName === 'SELECT') el.value = String(v);
+    else el.value = v;
+  });
+}
+
+function showAlert(id, msg, type = 'success') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
+async function saveMeta(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const c = await getContent();
+  const val = { ...(c.meta || {}), ...Object.fromEntries(fd) };
+  const r = await saveContent('meta', val);
+  showAlert('meta-alert', r.success ? 'Settings saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Specials ─────────────────────────────────────────────────────────────────
+
+async function saveSpecials(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const val = Object.fromEntries(fd);
+  val.active = val.active === 'true';
+  const r = await saveContent('specials', val);
+  showAlert('specials-alert', r.success ? 'Banner saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Story ────────────────────────────────────────────────────────────────────
+
+async function saveStory(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const r = await saveContent('story', Object.fromEntries(fd));
+  showAlert('story-alert', r.success ? 'Story saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Rooms ────────────────────────────────────────────────────────────────────
+
+let _rooms = [];
+
+function renderRoomsEditor(rooms) {
+  _rooms = rooms.map(r => ({ ...r }));
+  const el = document.getElementById('rooms-editor');
+  el.innerHTML = _rooms.map((r, i) => `
+    <div class="room-editor-row">
+      <div class="room-editor-header">
+        <span>Room ${i + 1}</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Name</label><input oninput="_rooms[${i}].name=this.value" value="${r.name || ''}" placeholder="e.g. The Garden Room"></div>
+        <div class="form-group"><label>Slug (URL)</label><input oninput="_rooms[${i}].slug=this.value" value="${r.slug || ''}" placeholder="e.g. garden-room"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Bed Type</label><input oninput="_rooms[${i}].bedType=this.value" value="${r.bedType || ''}" placeholder="e.g. King / Twin"></div>
+        <div class="form-group"><label>Occupancy</label><input oninput="_rooms[${i}].occupancy=this.value" value="${r.occupancy || ''}" placeholder="e.g. 2 adults"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Description</label><textarea oninput="_rooms[${i}].description=this.value">${r.description || ''}</textarea></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Amenities (comma-separated)</label><input oninput="_rooms[${i}].amenities=this.value.split(',')" value="${(r.amenities||[]).join(', ')}" placeholder="En-suite, AC, TV, Safe"></div>
+        <div class="form-group">
+          <label>Placeholder (room details TBC)</label>
+          <select onchange="_rooms[${i}].placeholder=this.value==='true'">
+            <option value="false" ${!r.placeholder?'selected':''}>No — show full details</option>
+            <option value="true"  ${r.placeholder?'selected':''}>Yes — coming soon</option>
+          </select>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function saveRooms() {
+  const r = await saveContent('rooms', _rooms);
+  showAlert('rooms-alert', r.success ? 'Rooms saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Rates ────────────────────────────────────────────────────────────────────
+
+let _rates = [], _laundry = [];
+
+function renderRatesEditor(rates, notes, laundry) {
+  _rates = rates.map(r => ({ ...r }));
+  _laundry = laundry.map(l => ({ ...l }));
+
+  document.getElementById('rates-notes-input').value = notes;
+
+  const rel = document.getElementById('rates-editor');
+  rel.innerHTML = _rates.map((r, i) => `
+    <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:.75rem; margin-bottom:.5rem; align-items:center;">
+      <input value="${r.package}" oninput="_rates[${i}].package=this.value" style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Package name">
+      <input type="number" value="${r.standard}" oninput="_rates[${i}].standard=+this.value" style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Standard">
+      <input type="number" value="${r.weekend}"  oninput="_rates[${i}].weekend=+this.value"  style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Weekend">
+      <input type="number" value="${r.peak}"     oninput="_rates[${i}].peak=+this.value"     style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Peak">
+    </div>`).join('');
+
+  const lel = document.getElementById('laundry-editor');
+  lel.innerHTML = _laundry.map((l, i) => `
+    <div style="display:grid; grid-template-columns:2fr 1fr auto; gap:.75rem; margin-bottom:.5rem; align-items:center;">
+      <input value="${l.item}" oninput="_laundry[${i}].item=this.value" style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Item name">
+      <input type="number" value="${l.price}" oninput="_laundry[${i}].price=+this.value" style="padding:.45rem .65rem;border:1px solid var(--border);border-radius:4px;font-size:.82rem;font-family:inherit;" placeholder="Price">
+      <button class="btn btn-danger btn-sm" onclick="_laundry.splice(${i},1);renderRatesEditor(_rates,document.getElementById('rates-notes-input').value,_laundry)">✕</button>
+    </div>`).join('');
+}
+
+async function saveRates() {
+  const notes = document.getElementById('rates-notes-input').value;
+  const [r1, r2] = await Promise.all([saveContent('rates', _rates), saveContent('ratesNotes', notes)]);
+  showAlert('rates-alert', r1.success ? 'Rates saved.' : `Error: ${r1.error}`, r1.success ? 'success' : 'error');
+}
+
+async function saveLaundry() {
+  const r = await saveContent('laundry', _laundry);
+  showAlert('laundry-alert', r.success ? 'Laundry prices saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Things To Do ─────────────────────────────────────────────────────────────
+
+let _things = [];
+
+function renderThingsEditor(things) {
+  _things = things.map(t => ({ ...t }));
+  const el = document.getElementById('things-editor');
+  el.innerHTML = _things.map((t, i) => `
+    <div style="border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+        <strong style="font-size:.85rem;">#${i+1}</strong>
+        <button class="btn btn-danger btn-sm" onclick="_things.splice(${i},1);renderThingsEditor(_things)">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Title</label><input value="${t.title||''}" oninput="_things[${i}].title=this.value" placeholder="e.g. Pennington Beaches"></div>
+        <div></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Description</label><textarea oninput="_things[${i}].description=this.value" style="min-height:70px;">${t.description||''}</textarea></div>
+      </div>
+    </div>`).join('');
+}
+
+function addThing() {
+  _things.push({ id: `td${Date.now()}`, title: '', description: '' });
+  renderThingsEditor(_things);
+}
+
+async function saveThings() {
+  const r = await saveContent('thingsToDo', _things);
+  showAlert('things-alert', r.success ? 'Saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+}
+
+// ─── Images ───────────────────────────────────────────────────────────────────
+
+let _images = { hero: '', ogImage: '', gallery: [] };
+
+function renderImagesPage(images) {
+  _images = { ...images, gallery: [...(images.gallery || [])] };
+  if (_images.hero)    document.getElementById('hero-preview').innerHTML = `<img src="${_images.hero}" style="max-height:120px;border-radius:4px;">`;
+  if (_images.ogImage) document.getElementById('og-preview').innerHTML   = `<img src="${_images.ogImage}" style="max-height:80px;border-radius:4px;">`;
+  renderGalleryGrid();
+}
+
+function renderGalleryGrid() {
+  const el = document.getElementById('gallery-grid');
+  el.innerHTML = (_images.gallery || []).map((img, i) => `
+    <div class="img-thumb">
+      <img src="${img.url}" alt="${img.alt||''}">
+      <button class="img-thumb-del" onclick="deleteGalleryImage('${img.fileId}', ${i})" title="Remove">✕</button>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:.82rem;margin-top:.5rem;">No gallery images yet.</p>';
+}
+
+function triggerUpload(id) { document.getElementById(id).click(); }
+
+async function uploadImage(e, role) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('role', role);
+  fd.append('alt', role === 'hero' ? 'Perry\'s @ Umdoni Point hero image' : 'Perry\'s social share image');
+  showAlert('hero-alert', 'Uploading…', 'info');
+  const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
+  const data = await r.json();
+  if (data.success) {
+    _content = null; // bust cache
+    const c = await getContent();
+    renderImagesPage(c.images || {});
+    showAlert('hero-alert', 'Image uploaded.', 'success');
+  } else {
+    showAlert('hero-alert', `Upload failed: ${data.error}`, 'error');
+  }
+}
+
+async function uploadGalleryImages(e) {
+  const files = Array.from(e.target.files);
+  const category = document.getElementById('upload-category').value;
+  showAlert('gallery-alert', `Uploading ${files.length} image(s)…`, 'info');
+  for (const file of files) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('role', 'gallery');
+    fd.append('category', category);
+    fd.append('alt', file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '));
+    await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
+  }
+  _content = null;
+  const c = await getContent();
+  renderImagesPage(c.images || {});
+  showAlert('gallery-alert', 'Images uploaded.', 'success');
+}
+
+async function deleteGalleryImage(fileId, idx) {
+  if (!confirm('Remove this image from the gallery?')) return;
+  const r = await apiFetch('/api/admin/image', { method: 'DELETE', body: JSON.stringify({ fileId }) });
+  if (r.success) {
+    _images.gallery.splice(idx, 1);
+    renderGalleryGrid();
+  }
+}
+
+// Drag and drop on gallery zone
+const dropZone = document.getElementById('gallery-drop-zone');
+if (dropZone) {
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const input = document.getElementById('gallery-file');
+    input.files = e.dataTransfer.files;
+    uploadGalleryImages({ target: input });
+  });
+}
+
+// ─── Pending checklist ────────────────────────────────────────────────────────
+
+let _pending = { items: [] };
+
+function renderPendingPage(pending) {
+  _pending = { items: [...pending.items] };
+  const ul = document.getElementById('pending-list');
+  ul.innerHTML = _pending.items.map((item, i) => `
+    <li class="pending-item ${item.done ? 'done' : ''}" onclick="togglePending(${i})">
+      <input type="checkbox" ${item.done ? 'checked' : ''} onclick="togglePending(${i});event.stopPropagation()">
+      <label>${item.label}</label>
+      ${item.done ? '<span style="color:var(--green);font-size:.75rem;margin-left:auto;">✓ Done</span>' : ''}
+    </li>`).join('');
+}
+
+function togglePending(i) {
+  _pending.items[i].done = !_pending.items[i].done;
+  renderPendingPage(_pending);
+}
+
+async function savePending() {
+  const r = await saveContent('pending', _pending);
+  showAlert('pending-alert', r.success ? 'Checklist saved.' : `Error: ${r.error}`, r.success ? 'success' : 'error');
+  _content = null; // bust cache so dashboard stats refresh
+}
+</script>
+</body>
+</html>

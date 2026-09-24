@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Things To Do | Perry's @ Umdoni Point</title>
+  <meta name="description" content="Discover what to do on the KZN South Coast — beaches, whale watching, golf, diving and more — all near Perry's @ Umdoni Point in Pennington.">
+  <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+
+  <div id="specials-banner"></div>
+
+  <header class="site-header">
+    <nav class="nav-inner" aria-label="Main navigation">
+      <a href="/" class="nav-logo">Perry's</a>
+      <button id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <ul id="nav-menu" role="menubar">
+        <li role="none"><a href="/"              class="nav-link" role="menuitem">Home</a></li>
+        <li role="none"><a href="/about/"        class="nav-link" role="menuitem">Our Story</a></li>
+        <li role="none"><a href="/rooms/"        class="nav-link" role="menuitem">Rooms</a></li>
+        <li role="none"><a href="/experience/"   class="nav-link" role="menuitem">Experience</a></li>
+        <li role="none"><a href="/things-to-do/" class="nav-link" role="menuitem">Things To Do</a></li>
+        <li role="none"><a href="/gallery/"      class="nav-link" role="menuitem">Gallery</a></li>
+        <li role="none"><a href="/contact/"      class="nav-link" role="menuitem">Contact</a></li>
+        <li role="none"><a href="/rates/"        class="nav-link nav-book" role="menuitem">Book Now</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <p class="breadcrumb"><a href="/">Home</a> / Things To Do</p>
+      <h1>Things To Do</h1>
+      <p>The KwaZulu-Natal South Coast at your doorstep</p>
+    </div>
+
+    <section>
+      <div class="section-inner">
+        <p style="color:var(--muted); max-width:660px; margin-bottom:3rem;">The stretch of coastline around Pennington and Umdoni Point is one of South Africa's best-kept secrets. Whether you're chasing waves, wildlife, golf or simply quiet, you'll find it within minutes of Perry's.</p>
+        <div id="things-grid" class="things-grid"></div>
+      </div>
+    </section>
+
+    <!-- Golf callout -->
+    <section class="cream-bg">
+      <div class="section-inner" style="display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;">
+        <div>
+          <p class="section-label">Golf</p>
+          <h2 class="section-title">A Golfer's Stretch of Coast</h2>
+          <p style="color:var(--muted); margin-bottom:1rem;">The South Coast is famous among golfers for its combination of spectacular scenery and world-class courses. Perry's is within easy reach of four excellent venues:</p>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:.6rem; margin-bottom:1.5rem;">
+            <li style="display:flex; gap:.75rem; align-items:start;"><span style="color:var(--gold);">✦</span> <strong>Umdoni Park Golf Club</strong> — a few minutes away, one of the finest on the coast</li>
+            <li style="display:flex; gap:.75rem; align-items:start;"><span style="color:var(--gold);">✦</span> <strong>Selborne Golf Estate</strong> — championship course in Bot River Valley</li>
+            <li style="display:flex; gap:.75rem; align-items:start;"><span style="color:var(--gold);">✦</span> <strong>Penn Valley Golf Club</strong> — relaxed club in Pennington town</li>
+            <li style="display:flex; gap:.75rem; align-items:start;"><span style="color:var(--gold);">✦</span> More courses within 30 minutes up and down the coast</li>
+          </ul>
+          <p style="color:var(--muted); font-size:.85rem; font-style:italic;">Ask Debbi about golf-and-stay packages.</p>
+        </div>
+        <div style="aspect-ratio:4/3; background:var(--cream); border-radius:4px; overflow:hidden;">
+          <img src="/assets/golf.jpg" alt="Golf on the KZN South Coast" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Wildlife / whales -->
+    <section>
+      <div class="section-inner" style="display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;">
+        <div style="aspect-ratio:4/3; background:var(--cream); border-radius:4px; overflow:hidden;">
+          <img src="/assets/whales.jpg" alt="Whale watching on the KZN South Coast" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+        </div>
+        <div>
+          <p class="section-label">Wildlife</p>
+          <h2 class="section-title">Whales, Dolphins &amp; Marine Life</h2>
+          <p style="color:var(--muted); margin-bottom:1rem;">The South Coast is one of the best places in South Africa to watch humpback whales on their annual migration (June to November). Dolphins are resident year-round and can often be spotted surfing the breaks right from the beach.</p>
+          <p style="color:var(--muted); margin-bottom:1rem;">For divers, the South Coast's warm Indian Ocean waters offer rich reefs, bull sharks, Zambezi rays and leatherback turtles. Aliwal Shoal, an hour up the coast, is ranked among the world's top dive sites.</p>
+          <a href="/contact/" class="btn btn-navy">Ask us about guided trips</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick links grid -->
+    <section class="navy-bg">
+      <div class="section-inner">
+        <p class="section-label" style="color:var(--gold);">Also nearby</p>
+        <h2 class="section-title" style="color:var(--white); margin-bottom:2rem;">More to Explore</h2>
+        <div class="grid-3">
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">Scottburgh</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">The nearest town — great restaurants, the famous Scottburgh Slides waterpark, and a safe swimming beach.</p>
+          </div>
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">Hiking &amp; Walking</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">Coastal forest trails start at Umdoni Point itself. The cliffside paths offer stunning views over the Indian Ocean.</p>
+          </div>
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">Fishing</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">Rock and surf fishing from the coastline around Pennington, or charter a boat for deep-sea fishing.</p>
+          </div>
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">iSimangaliso Wetland Park</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">A UNESCO World Heritage Site — crocodiles, hippos, tropical beaches and snorkelling reefs within a day trip.</p>
+          </div>
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">Local Markets</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">Weekend craft and produce markets along the South Coast showcase local artisans and fresh South African flavours.</p>
+          </div>
+          <div style="background:rgba(255,255,255,.06); border-radius:4px; padding:1.5rem;">
+            <h3 style="font-size:1rem; color:var(--gold); margin-bottom:.4rem;">Surfing</h3>
+            <p style="color:rgba(255,255,255,.7); font-size:.9rem;">The South Coast has consistent surf breaks suitable for beginners and experienced surfers alike.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="section-inner">
+        <p class="section-label">Start planning</p>
+        <h2>Book your South Coast escape</h2>
+        <p>Perry's is the perfect base to explore everything the KZN South Coast has to offer.</p>
+        <div class="cta-btns">
+          <a href="/rates/" class="btn btn-primary">View Rates &amp; Book</a>
+          <a href="/contact/" class="btn btn-navy">Ask Us Anything</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo">Perry's @ Umdoni Point</a>
+        <p>Boutique Coastal Forest Getaway in the historic Barker Farmhouse, Pennington, KwaZulu-Natal South Coast.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/about/">Our Story</a></li>
+          <li><a href="/rooms/">Rooms</a></li>
+          <li><a href="/experience/">Experience</a></li>
+          <li><a href="/things-to-do/">Things To Do</a></li>
+          <li><a href="/gallery/">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Book</h4>
+        <ul>
+          <li><a href="/rates/">Rates &amp; Book</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/booking-terms/">Booking Terms</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><span data-phone>—</span></li>
+          <li><a href="#" data-whatsapp-link>WhatsApp</a></li>
+          <li><span data-email>—</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Perry's @ Umdoni Point</span>
+      <div class="footer-legal">
+        <a href="/privacy/">Privacy &amp; POPIA</a>
+        <a href="/terms/">Terms</a>
+        <a href="/booking-terms/">Booking Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js"></script>
+</body>
+</html>

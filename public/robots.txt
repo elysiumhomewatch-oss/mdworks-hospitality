@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /privacy/
+Disallow: /terms/
+Disallow: /booking-terms/
+
+Sitemap: https://perrys-umdonipoint.co.za/sitemap.xml

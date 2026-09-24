@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gallery | Perry's @ Umdoni Point</title>
+  <meta name="description" content="Photos of Perry's @ Umdoni Point — the historic Barker Farmhouse, rooms, facilities and the beautiful KZN South Coast.">
+  <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+  <style>
+    .filter-bar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .filter-btn {
+      padding: .4rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      background: none;
+      font-family: var(--font-body);
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--navy);
+      color: var(--gold);
+      border-color: var(--navy);
+    }
+    .gallery-item { cursor: pointer; }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 4px; }
+    #lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #lightbox-caption {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.7);
+      font-size: .85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="specials-banner"></div>
+
+  <header class="site-header">
+    <nav class="nav-inner" aria-label="Main navigation">
+      <a href="/" class="nav-logo">Perry's</a>
+      <button id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <ul id="nav-menu" role="menubar">
+        <li role="none"><a href="/"              class="nav-link" role="menuitem">Home</a></li>
+        <li role="none"><a href="/about/"        class="nav-link" role="menuitem">Our Story</a></li>
+        <li role="none"><a href="/rooms/"        class="nav-link" role="menuitem">Rooms</a></li>
+        <li role="none"><a href="/experience/"   class="nav-link" role="menuitem">Experience</a></li>
+        <li role="none"><a href="/things-to-do/" class="nav-link" role="menuitem">Things To Do</a></li>
+        <li role="none"><a href="/gallery/"      class="nav-link" role="menuitem">Gallery</a></li>
+        <li role="none"><a href="/contact/"      class="nav-link" role="menuitem">Contact</a></li>
+        <li role="none"><a href="/rates/"        class="nav-link nav-book" role="menuitem">Book Now</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <p class="breadcrumb"><a href="/">Home</a> / Gallery</p>
+      <h1>Gallery</h1>
+      <p>A glimpse of Perry's @ Umdoni Point and the South Coast</p>
+    </div>
+
+    <section>
+      <div class="section-inner">
+        <div class="filter-bar" id="filter-bar">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="property">Property</button>
+          <button class="filter-btn" data-filter="rooms">Rooms</button>
+          <button class="filter-btn" data-filter="food">Food &amp; Dining</button>
+          <button class="filter-btn" data-filter="facilities">Facilities</button>
+          <button class="filter-btn" data-filter="surroundings">Surroundings</button>
+        </div>
+        <div id="gallery-grid" class="gallery-grid"></div>
+      </div>
+    </section>
+
+    <section class="cream-bg cta-section">
+      <div class="section-inner">
+        <p class="section-label">Follow us</p>
+        <h2>See more on Instagram</h2>
+        <p>Photography is coming soon — follow us on social media for sneak peeks and updates as we open.</p>
+        <div class="cta-btns">
+          <a href="#" data-instagram class="btn btn-navy" style="display:none;">Instagram</a>
+          <a href="#" data-facebook class="btn btn-navy" style="display:none;">Facebook</a>
+          <a href="/rates/" class="btn btn-primary">Book Your Stay</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-label="Image viewer" aria-modal="true">
+    <button id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+    <p id="lightbox-caption"></p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo">Perry's @ Umdoni Point</a>
+        <p>Boutique Coastal Forest Getaway in the historic Barker Farmhouse, Pennington, KwaZulu-Natal South Coast.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/about/">Our Story</a></li>
+          <li><a href="/rooms/">Rooms</a></li>
+          <li><a href="/experience/">Experience</a></li>
+          <li><a href="/things-to-do/">Things To Do</a></li>
+          <li><a href="/gallery/">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Book</h4>
+        <ul>
+          <li><a href="/rates/">Rates &amp; Book</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/booking-terms/">Booking Terms</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><span data-phone>—</span></li>
+          <li><a href="#" data-whatsapp-link>WhatsApp</a></li>
+          <li><span data-email>—</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Perry's @ Umdoni Point</span>
+      <div class="footer-legal">
+        <a href="/privacy/">Privacy &amp; POPIA</a>
+        <a href="/terms/">Terms</a>
+        <a href="/booking-terms/">Booking Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/site.js"></script>
+  <script>
+    // Gallery filter + lightbox
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterBar = document.getElementById('filter-bar');
+      const grid = document.getElementById('gallery-grid');
+      const lightbox = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      const lbCaption = document.getElementById('lightbox-caption');
+
+      // Filter buttons
+      filterBar.addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.gallery-item').forEach(item => {
+          item.style.display = (filter === 'all' || item.dataset.category === filter) ? '' : 'none';
+        });
+      });
+
+      // Lightbox — open on click
+      grid.addEventListener('click', e => {
+        const item = e.target.closest('.gallery-item');
+        if (!item) return;
+        const img = item.querySelector('img');
+        if (!img) return;
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lbCaption.textContent = img.alt;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Lightbox — close
+      document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+      function closeLightbox() {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+</body>
+</html>
