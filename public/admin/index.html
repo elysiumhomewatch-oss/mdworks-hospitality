@@ -506,29 +506,6 @@
         </div>
       </div>
 
-        <div class="card">
-          <div class="card-title">Gallery Images</div>
-          <div id="gallery-alert"></div>
-          <div class="upload-zone" id="gallery-drop-zone" onclick="triggerUpload('gallery-file')">
-            <input type="file" id="gallery-file" accept="image/*" multiple onchange="uploadGalleryImages(event)">
-            <div style="font-size:2rem;">📷</div>
-            <p>Click to upload gallery images (or drag and drop)</p>
-            <p style="font-size:.75rem; margin-top:.25rem;">JPEG or PNG · max 10MB per image · multiple files supported</p>
-          </div>
-          <div style="margin-top:1rem; display:flex; gap:.75rem; align-items:center;">
-            <label style="font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--navy);">Upload to category:</label>
-            <select id="upload-category" style="padding:.4rem .65rem; border:1px solid var(--border); border-radius:4px; font-size:.82rem; font-family:inherit;">
-              <option value="property">Property</option>
-              <option value="rooms">Rooms</option>
-              <option value="food">Food &amp; Dining</option>
-              <option value="facilities">Facilities</option>
-              <option value="surroundings">Surroundings</option>
-              <option value="general">General</option>
-            </select>
-          </div>
-          <div id="gallery-grid" class="img-grid"></div>
-        </div>
-      </div>
 
       <!-- ── PENDING ── -->
       <div class="page" id="page-pending">
