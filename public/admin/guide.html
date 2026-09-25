@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perry's Admin Guide — How to Manage Your Website</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #1B2A4A;
+    --gold:   #C9A84C;
+    --gold-lt:#E6C97A;
+    --cream:  #F5F1EB;
+    --white:  #FFFFFF;
+    --text:   #2C2C2C;
+    --muted:  #6B6B6B;
+    --border: #DDD8D0;
+    --green:  #2D7D46;
+    --green-bg:#EBF5EF;
+    --amber:  #8C6A00;
+    --amber-bg:#FDF6E3;
+    --red:    #8B2020;
+    --red-bg: #FDEAEA;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--cream);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: var(--navy);
+    color: var(--white);
+    padding: 5rem 3rem 4rem;
+    text-align: center;
+  }
+  .cover-eyebrow {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .cover-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,.7);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+  }
+  .cover-meta {
+    display: inline-flex;
+    gap: 2rem;
+    font-size: .78rem;
+    color: rgba(255,255,255,.5);
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding-top: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cover-meta span strong { color: var(--gold-lt); }
+
+  /* ── Layout ── */
+  .doc {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2rem 2.5rem;
+    margin: 3rem 0 2.5rem;
+  }
+  .toc h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin-bottom: 1rem;
+  }
+  .toc ol {
+    padding-left: 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .3rem .5rem;
+  }
+  .toc a {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 500;
+  }
+  .toc a:hover { color: var(--gold); text-decoration: underline; }
+  @media (max-width: 540px) { .toc ol { grid-template-columns: 1fr; } }
+
+  /* ── Section headings ── */
+  .section-block {
+    margin-top: 3.5rem;
+  }
+  .section-number {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: .35rem;
+  }
+  .section-block h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.65rem;
+    color: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: .6rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--navy);
+    margin: 2rem 0 .6rem;
+  }
+  .section-block p { color: var(--muted); margin-bottom: 1rem; }
+  .section-block p strong { color: var(--text); }
+  .section-block ul, .section-block ol {
+    color: var(--muted);
+    padding-left: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .section-block li { margin-bottom: .35rem; }
+
+  /* ── Steps ── */
+  .steps { list-style: none; padding: 0; counter-reset: steps; margin-bottom: 1.25rem; }
+  .steps li {
+    counter-increment: steps;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: .85rem;
+    color: var(--muted);
+  }
+  .steps li::before {
+    content: counter(steps);
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: .72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: .15rem;
+  }
+
+  /* ── Callout boxes ── */
+  .tip, .warn, .important {
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: .9rem;
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+  }
+  .tip    { background: var(--green-bg);  color: var(--green); border-left: 3px solid var(--green); }
+  .warn   { background: var(--amber-bg);  color: var(--amber); border-left: 3px solid var(--gold); }
+  .important { background: var(--red-bg); color: var(--red);   border-left: 3px solid var(--red); }
+  .tip .icon, .warn .icon, .important .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+
+  /* ── Field table ── */
+  .field-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: .88rem; }
+  .field-table th {
+    background: var(--navy); color: var(--white);
+    font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    padding: .6rem 1rem; text-align: left;
+  }
+  .field-table td { padding: .6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--muted); }
+  .field-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .field-table tr:last-child td { border-bottom: none; }
+  .field-table tr:nth-child(even) td { background: rgba(245,241,235,.5); }
+
+  /* ── Tag pills ── */
+  .pill {
+    display: inline-block;
+    font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: .2rem .55rem; border-radius: 20px; margin-left: .35rem; vertical-align: middle;
+  }
+  .pill-admin  { background: var(--navy);    color: var(--white); }
+  .pill-auto   { background: var(--gold);    color: var(--navy); }
+  .pill-public { background: var(--green-bg);color: var(--green); }
+
+  /* ── Key shortcut ── */
+  kbd {
+    display: inline-block;
+    background: var(--text); color: var(--white);
+    font-family: 'Montserrat', monospace;
+    font-size: .72rem; font-weight: 600;
+    padding: .15rem .45rem; border-radius: 4px;
+  }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  /* ── Footer ── */
+  .doc-footer {
+    text-align: center;
+    font-size: .78rem;
+    color: var(--muted);
+    padding: 2rem 0 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+  .doc-footer a { color: var(--navy); }
+
+  /* ── Print ── */
+  @media print {
+    body { background: white; font-size: 13px; }
+    .cover { padding: 3rem 2rem; }
+    .section-block { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <p class="cover-eyebrow">Perry's @ Umdoni Point</p>
+  <h1>Your Website<br>Admin Guide</h1>
+  <p class="cover-sub">Everything you need to manage your website — bookings, content, photos and more — without touching a line of code.</p>
+  <div class="cover-meta">
+    <span><strong>Admin URL</strong> perrys.pages.dev/admin/</span>
+    <span><strong>Public site</strong> perrys.pages.dev</span>
+    <span><strong>Prepared by</strong> MD Works</span>
+    <span><strong>Version</strong> September 2026</span>
+  </div>
+</div>
+
+<div class="doc">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#s1">Getting Started — Logging In</a></li>
+      <li><a href="#s2">Dashboard — Your Overview</a></li>
+      <li><a href="#s3">Managing Bookings</a></li>
+      <li><a href="#s4">Site Settings</a></li>
+      <li><a href="#s5">Specials Banner</a></li>
+      <li><a href="#s6">Our Story</a></li>
+      <li><a href="#s7">Page Content</a></li>
+      <li><a href="#s8">Rooms</a></li>
+      <li><a href="#s9">Rates &amp; Laundry</a></li>
+      <li><a href="#s10">Things To Do</a></li>
+      <li><a href="#s11">Images &amp; Gallery</a></li>
+      <li><a href="#s12">Pending Items Checklist</a></li>
+      <li><a href="#s13">Image Size Reference</a></li>
+      <li><a href="#s14">Tips &amp; Common Questions</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <div class="section-block" id="s1">
+    <span class="section-number">Section 1</span>
+    <h2>Getting Started — Logging In</h2>
+
+    <p>Your admin panel is a private, password-protected area of the website that only you can access. Guests never see it.</p>
+
+    <h3>How to open it</h3>
+    <ol class="steps">
+      <li>Open any browser (Chrome, Edge, Safari, Firefox — all work fine).</li>
+      <li>Go to: <strong>perrys.pages.dev/admin/</strong></li>
+      <li>Type your password when prompted and press Enter or click <strong>Login</strong>.</li>
+    </ol>
+
+    <div class="tip"><span class="icon">💡</span><span>Bookmark the admin page in your browser so you can get back to it in one click.</span></div>
+
+    <h3>Your password</h3>
+    <p>MD Works set your password when the site was built and sent it to you separately. If you've forgotten it or want it changed, contact MD Works — it takes less than a minute to reset.</p>
+
+    <div class="warn"><span class="icon">⚠️</span><span>Do not share your password with guests. The admin panel lets you delete bookings and change the site — keep it private.</span></div>
+
+    <h3>Logging out</h3>
+    <p>Simply close the browser tab. The session ends automatically after a period of inactivity.</p>
+  </div>
+
+  <!-- 2 -->
+  <div class="section-block" id="s2">
+    <span class="section-number">Section 2</span>
+    <h2>Dashboard — Your Overview</h2>
+
+    <p>The Dashboard is the first screen you see after logging in. It gives you a quick snapshot of what's happening without needing to click around.</p>
+
+    <h3>What you'll see</h3>
+    <ul>
+      <li><strong>Booking stats</strong> — total bookings, how many are pending (waiting for your confirmation), confirmed and cancelled.</li>
+      <li><strong>Recent bookings</strong> — the last few enquiries at a glance, with guest name, dates and status.</li>
+      <li><strong>Outstanding items checklist</strong> — a preview of your Pending Items list (see Section 12), reminding you what's still to do before opening.</li>
+    </ul>
+
+    <p>To explore any area in detail, click the relevant item in the <strong>left-hand menu</strong>.</p>
+  </div>
+
+  <!-- 3 -->
+  <div class="section-block" id="s3">
+    <span class="section-number">Section 3</span>
+    <h2>Managing Bookings</h2>
+
+    <p>When a guest fills in the booking enquiry form on the website, their details are automatically saved and you receive a WhatsApp message with all the information. You then confirm or decline the booking manually and update the status in the admin panel.</p>
+
+    <h3>The booking flow</h3>
+    <ol class="steps">
+      <li>Guest fills in the booking form on the website.</li>
+      <li>You receive a WhatsApp message with their full details.</li>
+      <li>You reply to the guest via WhatsApp to confirm or discuss availability.</li>
+      <li>Once confirmed, log into admin, find the booking and mark it <strong>Confirmed</strong>.</li>
+    </ol>
+
+    <h3>Viewing all bookings</h3>
+    <p>Click <strong>All Bookings</strong> in the left menu. You'll see a table of all enquiries, newest first. You can filter by status — Pending, Confirmed or Cancelled — using the buttons at the top.</p>
+
+    <h3>Opening a booking</h3>
+    <p>Click any row in the table to open the full booking detail panel on the right. This shows you the guest's name, contact details, room preference, dates, number of guests, any special requests, and when they submitted the enquiry.</p>
+
+    <h3>Updating a booking status</h3>
+    <table class="field-table">
+      <tr><th>Button</th><th>What it does</th></tr>
+      <tr><td>Confirm</td><td>Marks the booking as confirmed. The status badge turns green.</td></tr>
+      <tr><td>Cancel</td><td>Marks it as cancelled. The badge turns grey. The record stays in the system.</td></tr>
+      <tr><td>Delete</td><td>Permanently removes the booking record. Use this for test entries or obvious spam — not for real bookings you might need later.</td></tr>
+    </table>
+
+    <div class="warn"><span class="icon">⚠️</span><span><strong>Delete is permanent.</strong> Once deleted, a booking cannot be recovered. If you're unsure, mark it Cancelled instead — it stays on record but is clearly closed.</span></div>
+
+    <div class="tip"><span class="icon">💡</span><span>The admin panel is your record-keeping tool. The actual confirmation still happens on WhatsApp — keep that conversation as your backup.</span></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section-block" id="s4">
+    <span class="section-number">Section 4</span>
+    <h2>Site Settings</h2>
+
+    <p>This is where you keep your contact details and social media links up to date. These appear automatically across the whole website — in the footer, on the contact page, and in the WhatsApp booking messages guests receive.</p>
+
+    <h3>Site Logo</h3>
+    <p>At the top of Site Settings, you can upload your logo. When a logo is uploaded, it replaces the text "Perry's" in the navigation bar on every page of the site. If you haven't uploaded one yet, the text shows instead — both work perfectly.</p>
+
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Logo</td><td>Your logo file. PNG with a transparent background works best. Recommended size: 400×160 pixels. Maximum 500 KB. See Section 13 for image guidance.</td></tr>
+    </table>
+
+    <div class="tip"><span class="icon">💡</span><span>To upload a logo: click the upload zone, choose your file, and wait for the green success message. To remove it, click the <strong>Remove logo</strong> button. The nav text returns immediately.</span></div>
+
+    <h3>Contact details</h3>
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Phone</td><td>Your main phone number, e.g. +27 39 978 0000. Include the country code.</td></tr>
+      <tr><td>WhatsApp</td><td>The number guests message to confirm bookings. This is the number that receives the automatic booking notification. You can use a local format (e.g. 083 123 4567) — the site converts it automatically.</td></tr>
+      <tr><td>Email</td><td>Your contact email address, e.g. hello@perrys.co.za</td></tr>
+      <tr><td>Full Address</td><td>Your street address as you'd like it to appear on the Contact page.</td></tr>
+    </table>
+
+    <h3>Social media</h3>
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Instagram URL</td><td>Your full Instagram page link, e.g. https://instagram.com/perrysatudmonipoint</td></tr>
+      <tr><td>Facebook URL</td><td>Your full Facebook page link, e.g. https://facebook.com/perrysatudmonipoint</td></tr>
+    </table>
+    <p>Social links are hidden on the site until you fill them in. Once added, icons appear in the footer automatically. Leave blank if you're not ready.</p>
+
+    <h3>Google Maps embed</h3>
+    <p>This adds an interactive map to the Contact page. To get the embed code:</p>
+    <ol class="steps">
+      <li>Go to <strong>maps.google.com</strong> and search for your property.</li>
+      <li>Click <strong>Share</strong>, then <strong>Embed a map</strong>.</li>
+      <li>Copy the full code shown (it starts with <kbd>&lt;iframe</kbd>).</li>
+      <li>Paste it into the Google Maps Embed field in admin.</li>
+      <li>Click <strong>Save Settings</strong>.</li>
+    </ol>
+
+    <div class="tip"><span class="icon">💡</span><span>Always click <strong>Save Settings</strong> at the bottom after making any changes in this section. Changes are not saved automatically.</span></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section-block" id="s5">
+    <span class="section-number">Section 5</span>
+    <h2>Specials Banner</h2>
+
+    <p>The Specials Banner is a strip that appears at the very top of every page of the site — above the navigation bar. Use it to announce a promotion, an opening special, a seasonal offer, or anything time-sensitive you want every visitor to see the moment they land on the site.</p>
+
+    <div class="tip"><span class="icon">💡</span><span>The banner is off by default. Nothing shows on the site until you turn it on.</span></div>
+
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Active (toggle)</td><td>Switch this on to show the banner. Switch it off to hide it. The content is saved even when the banner is off, so you can prepare it in advance and turn it on when you're ready.</td></tr>
+      <tr><td>Banner Title</td><td>The bold text that leads the banner, e.g. <em>Opening Special — September 2026</em></td></tr>
+      <tr><td>Banner Body Text</td><td>A short description of the offer, e.g. <em>Stay 2 nights and get your third night at half price.</em></td></tr>
+      <tr><td>CTA Label</td><td>The text on the link button, e.g. <em>View Rates</em> or <em>Book Now</em></td></tr>
+      <tr><td>CTA Link</td><td>Where the button takes guests when they click it. Use <kbd>/rates/</kbd> for the rates page, <kbd>/contact/</kbd> for the contact page, etc.</td></tr>
+    </table>
+
+    <p>Click <strong>Save Banner</strong> when done. Toggle the Active switch and save again to turn it on or off at any time.</p>
+  </div>
+
+  <!-- 6 -->
+  <div class="section-block" id="s6">
+    <span class="section-number">Section 6</span>
+    <h2>Our Story</h2>
+
+    <p>This section controls the main story text on the <strong>Our Story</strong> page — the history of the Barker Farmhouse and Perry's. It's separate from all the other page content editors because it's your main brand story and deserves its own space.</p>
+
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Headline</td><td>The heading that appears above the story text, e.g. <em>A Historic South Coast Retreat</em></td></tr>
+      <tr><td>Body Text</td><td>Your full story. Write it here just as you would in a Word document. To create a new paragraph, press Enter twice (leave a blank line between paragraphs). The site will format it automatically.</td></tr>
+    </table>
+
+    <div class="tip"><span class="icon">💡</span><span>Keep paragraphs to 3–5 sentences for readability on screen. Short paragraphs are easier to read than long blocks of text.</span></div>
+
+    <p>Click <strong>Save Story</strong> when done.</p>
+  </div>
+
+  <!-- 7 -->
+  <div class="section-block" id="s7">
+    <span class="section-number">Section 7</span>
+    <h2>Page Content</h2>
+
+    <p>This is where you edit the main text sections on four of your key pages: <strong>Home, Our Story, Experience and Rooms</strong>. All the headings, paragraphs and list items you see on those pages can be updated here — no coding required.</p>
+
+    <p>The section is organised into four tabs, one for each page. Click a tab to edit that page's content. Each tab has several cards — one per section of the page.</p>
+
+    <div class="tip"><span class="icon">💡</span><span>Each tab has its own <strong>Save</strong> button at the bottom. Make sure you click the right one after editing. Changes on the Home tab, for example, won't be saved if you click the Rooms Save button.</span></div>
+
+    <h3>🏠 Home tab</h3>
+    <table class="field-table">
+      <tr><th>Card</th><th>What it controls</th></tr>
+      <tr><td>Hero Section</td><td>The main heading and tagline on the big photo banner at the top of the Home page.</td></tr>
+      <tr><td>Intro Section</td><td>The "Welcome" block below the hero — the label, heading, and two paragraphs of introductory text alongside the farmhouse photo.</td></tr>
+      <tr><td>Why Perry's Section</td><td>The cream-coloured "Six good reasons" block. Edit the heading, the tagline below it, and the six bullet points (one per line in the text box).</td></tr>
+      <tr><td>Experience Teaser Section</td><td>The navy-blue "More than a room" section that introduces the facilities.</td></tr>
+      <tr><td>CTA Section</td><td>The "Ready to book?" call-to-action block near the bottom of the Home page.</td></tr>
+    </table>
+
+    <h3>📖 Our Story tab</h3>
+    <table class="field-table">
+      <tr><th>Card</th><th>What it controls</th></tr>
+      <tr><td>Kayla Ann Section</td><td>The cream-background section about Kayla Ann and her kitchen — label, heading, two paragraphs and the italic note about dinner packages.</td></tr>
+      <tr><td>Perry's Way Section</td><td>The three-column values block. Edit the label, heading, and for each of the three pillars: the emoji, the pillar heading, and the description.</td></tr>
+      <tr><td>CTA Section</td><td>The navy "Come and be part of the story" block at the bottom of the page.</td></tr>
+    </table>
+
+    <h3>✨ Experience tab</h3>
+    <table class="field-table">
+      <tr><th>Card</th><th>What it controls</th></tr>
+      <tr><td>Dining Section</td><td>The Kayla Ann's Table section — label, heading, two paragraphs, and the italic note about the Italian Club.</td></tr>
+      <tr><td>Facilities Section</td><td>The label, heading, intro paragraph and footer note for the facilities grid. (The individual facility cards — pool, gym, spa etc. — are fixed design elements and not editable here.)</td></tr>
+      <tr><td>CTA Section</td><td>The navy call-to-action at the bottom of the Experience page.</td></tr>
+    </table>
+
+    <h3>🛏️ Rooms tab</h3>
+    <table class="field-table">
+      <tr><th>Card</th><th>What it controls</th></tr>
+      <tr><td>Intro Text</td><td>The paragraph that appears above the room cards on the Rooms page.</td></tr>
+      <tr><td>Standard Inclusions</td><td>The "Every Room Includes" section — label, heading, the 9 amenity items (one per line), and the italic note below.</td></tr>
+      <tr><td>Rates Teaser</td><td>The "From R950…" section near the bottom of the Rooms page.</td></tr>
+      <tr><td>Living &amp; Dining Section</td><td>A section you can switch on when you're ready. See below.</td></tr>
+    </table>
+
+    <h3>Living &amp; Dining section (Rooms page)</h3>
+    <p>This is a hidden section that can be switched on when you have content and a photo ready for it. It lets you tell guests about the shared living and dining spaces in the farmhouse.</p>
+
+    <ol class="steps">
+      <li>Fill in the Heading and Body text for the section.</li>
+      <li>Upload a photo using the upload zone (recommended size: 1200×900 pixels, landscape).</li>
+      <li>Tick the checkbox: <strong>Show Living &amp; Dining section on Rooms page</strong>.</li>
+      <li>Click <strong>Save Rooms Content</strong>.</li>
+    </ol>
+
+    <p>The section will immediately appear on the Rooms page. Untick the checkbox and save to hide it again at any time.</p>
+  </div>
+
+  <!-- 8 -->
+  <div class="section-block" id="s8">
+    <span class="section-number">Section 8</span>
+    <h2>Rooms</h2>
+
+    <p>The Rooms section lets you edit the five individual room cards that appear on the Rooms page and the Home page preview. Each room has its own set of fields.</p>
+
+    <h3>Room fields</h3>
+    <table class="field-table">
+      <tr><th>Field</th><th>What to put here</th></tr>
+      <tr><td>Name</td><td>The name of the room, e.g. <em>The Garden Room</em> or <em>The Farmhouse Suite</em></td></tr>
+      <tr><td>Bed Type</td><td>e.g. King, Queen, Twin, or King + Single</td></tr>
+      <tr><td>Occupancy</td><td>e.g. 2 adults, or 2 adults + 1 child</td></tr>
+      <tr><td>Description</td><td>A short paragraph about the room — its character, views, feel. 2–4 sentences is ideal.</td></tr>
+      <tr><td>Amenities</td><td>A comma-separated list of what's in the room, e.g. <em>En-suite, AC, Smart TV, Safe, Tea station</em></td></tr>
+      <tr><td>Placeholder</td><td>When this is ticked, the room card shows an "Enquire" button instead of "Book this room", and the card is slightly muted. Use this for rooms whose details aren't finalised yet. Untick it when the room is ready.</td></tr>
+      <tr><td>Room Image</td><td>The photo that appears at the top of the room card. See Section 13 for recommended sizes.</td></tr>
+    </table>
+
+    <div class="tip"><span class="icon">💡</span><span>Unlike other sections, the Rooms editor saves all five rooms at once. Fill in as many as you're ready for, then click <strong>Save All Rooms</strong> at the bottom.</span></div>
+
+    <h3>Uploading a room photo</h3>
+    <ol class="steps">
+      <li>Scroll to the room you want to update.</li>
+      <li>Click the <strong>Upload Room Image</strong> zone (or anywhere in the dashed box).</li>
+      <li>Choose your photo from your computer or phone.</li>
+      <li>Wait for the preview to appear — this confirms the upload was successful.</li>
+      <li>Click <strong>Save All Rooms</strong> to apply the change to the live site.</li>
+    </ol>
+  </div>
+
+  <!-- 9 -->
+  <div class="section-block" id="s9">
+    <span class="section-number">Section 9</span>
+    <h2>Rates &amp; Laundry</h2>
+
+    <p>This section controls the rates table on the <strong>Rates &amp; Book</strong> page and the laundry price list on the <strong>Experience</strong> page.</p>
+
+    <h3>Accommodation rates</h3>
+    <p>Each row in the rates table is one package (e.g. Bed &amp; Breakfast, Dinner Bed &amp; Breakfast). For each package you set three prices:</p>
+    <table class="field-table">
+      <tr><th>Column</th><th>What it means</th></tr>
+      <tr><td>Package</td><td>The name of the package as it appears in the table header.</td></tr>
+      <tr><td>Standard Rate</td><td>The price per person per night on weeknights (Sunday–Thursday).</td></tr>
+      <tr><td>Weekend Rate</td><td>The price per person per night on Friday and Saturday nights.</td></tr>
+      <tr><td>Peak Rate</td><td>The price per person per night during peak season (school holidays, December, Easter).</td></tr>
+    </table>
+
+    <p>You can add a new package by clicking <strong>+ Add Package</strong>, and remove one by clicking the bin icon on the right.</p>
+
+    <h3>Peak Season Note</h3>
+    <p>A short note below the rates table where you can explain what "peak season" means for your property, e.g. <em>Peak season applies to school holidays, long weekends and 15 Dec – 10 Jan.</em></p>
+
+    <h3>Laundry prices</h3>
+    <p>Works the same way as the rates table — each row is one laundry item (e.g. Shirt, Trousers, Dress) with a price. Add rows with <strong>+ Add Item</strong> and remove them with the bin icon.</p>
+
+    <div class="tip"><span class="icon">💡</span><span>Click <strong>Save Rates</strong> at the bottom after any changes. Rates and laundry prices are saved together with one button.</span></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="section-block" id="s10">
+    <span class="section-number">Section 10</span>
+    <h2>Things To Do</h2>
+
+    <p>This controls the cards on the <strong>Things To Do</strong> page — local activities, attractions and experiences near Perry's that you want to recommend to guests.</p>
+
+    <p>Each card has a <strong>Title</strong> (e.g. <em>Pennington Beaches</em>) and a <strong>Description</strong> (2–4 sentences about what it is and why guests will enjoy it).</p>
+
+    <h3>Adding a new card</h3>
+    <ol class="steps">
+      <li>Click <strong>+ Add Item</strong> at the top of the Things To Do editor.</li>
+      <li>A new empty card appears at the bottom.</li>
+      <li>Fill in the Title and Description.</li>
+      <li>Click <strong>Save Things To Do</strong>.</li>
+    </ol>
+
+    <h3>Removing a card</h3>
+    <p>Click the <strong>Remove</strong> button on the card you want to delete, then click <strong>Save Things To Do</strong> to confirm.</p>
+
+    <div class="tip"><span class="icon">💡</span><span>Cards appear on the page in the order you have them in the editor. Drag to reorder (or ask MD Works to add reordering if you'd like that feature).</span></div>
+  </div>
+
+  <!-- 11 -->
+  <div class="section-block" id="s11">
+    <span class="section-number">Section 11</span>
+    <h2>Images &amp; Gallery</h2>
+
+    <p>The Images section manages all the photos on the site. It has two parts: <strong>Named Images</strong> (specific photos used in specific places on the site) and the <strong>Gallery</strong> (the photo grid on the Gallery page).</p>
+
+    <h3>Named images</h3>
+    <p>These are the eight key photos used in specific spots across the site. Each has a label telling you exactly where it appears:</p>
+
+    <table class="field-table">
+      <tr><th>Image name</th><th>Where it appears</th></tr>
+      <tr><td>Hero</td><td>The large background photo on the Home page — the first thing visitors see.</td></tr>
+      <tr><td>OG Image</td><td>The photo that appears when someone shares a link to your site on WhatsApp, Facebook or Twitter. Ideally a wide, welcoming photo of the property.</td></tr>
+      <tr><td>Farmhouse</td><td>The farmhouse photo in the Welcome section on the Home page and on the Our Story page.</td></tr>
+      <tr><td>Farmhouse Exterior</td><td>An exterior shot of the farmhouse, used on the Our Story page.</td></tr>
+      <tr><td>Kayla Ann</td><td>A photo of Kayla Ann or the kitchen, used on the Our Story page.</td></tr>
+      <tr><td>Dining</td><td>A food or dining photo used on the Experience page.</td></tr>
+      <tr><td>Golf</td><td>A photo used on the Things To Do page.</td></tr>
+      <tr><td>Whales</td><td>A photo used on the Things To Do page.</td></tr>
+    </table>
+
+    <div class="tip"><span class="icon">💡</span><span>Each named image upload zone shows a preview of the current photo. If no photo has been uploaded yet, the site falls back to a default placeholder. Upload your own photos as soon as you have them.</span></div>
+
+    <h3>Gallery images</h3>
+    <p>The gallery is the photo grid on the <strong>Gallery</strong> page. You can upload as many photos as you like. Each photo can be tagged with a category (Rooms, Exterior, Dining, Surroundings) so guests can filter the gallery.</p>
+
+    <h3>Uploading a gallery photo</h3>
+    <ol class="steps">
+      <li>Scroll to the <strong>Gallery Images</strong> card.</li>
+      <li>Select a category from the dropdown (or leave it as General).</li>
+      <li>Click the upload zone and choose your photo.</li>
+      <li>The photo uploads automatically and appears in the gallery immediately — no save button needed for gallery uploads.</li>
+    </ol>
+
+    <h3>Removing a gallery photo</h3>
+    <p>Click the <strong>Remove</strong> button below the photo you want to delete. It's removed from the gallery immediately.</p>
+
+    <div class="warn"><span class="icon">⚠️</span><span>Removing a gallery photo is permanent. It is deleted from the image server and cannot be recovered. Keep your original photos backed up on your computer or phone.</span></div>
+
+    <p>See <strong>Section 13</strong> for recommended photo sizes and quality guidance.</p>
+  </div>
+
+  <!-- 12 -->
+  <div class="section-block" id="s12">
+    <span class="section-number">Section 12</span>
+    <h2>Pending Items Checklist</h2>
+
+    <p>The Pending Items section is a private checklist — only visible in the admin panel, never on the public website. It tracks the outstanding items that need to be confirmed before Perry's is fully ready to launch.</p>
+
+    <p>Each item has a <strong>label</strong> (the task) and a <strong>done</strong> checkbox. Tick the checkbox when an item is complete. MD Works can add or remove items from the list as things get done — just let us know.</p>
+
+    <p>The checklist also appears as a summary on your Dashboard so you always know at a glance what's still outstanding.</p>
+
+    <div class="tip"><span class="icon">💡</span><span>Click <strong>Save Checklist</strong> after ticking any items, or your progress won't be saved.</span></div>
+  </div>
+
+  <!-- 13 -->
+  <div class="section-block" id="s13">
+    <span class="section-number">Section 13</span>
+    <h2>Image Size Reference</h2>
+
+    <p>Good photos make a huge difference to how your site looks and feels. Here's a quick reference for what works best in each spot. You don't need to get these exact — close is fine — but staying roughly within these guidelines will keep the site looking sharp.</p>
+
+    <h3>Format guide</h3>
+    <ul>
+      <li><strong>JPG or WebP</strong> — best for all photographs. Keep file size under 1 MB per photo.</li>
+      <li><strong>PNG</strong> — best when you need a transparent background (e.g. your logo). Keep under 500 KB.</li>
+      <li><strong>SVG</strong> — ideal for logos if your designer can supply one. Very small file size, crisp at any size.</li>
+    </ul>
+
+    <table class="field-table">
+      <tr><th>Image</th><th>Recommended size</th><th>Format</th><th>Notes</th></tr>
+      <tr><td>Logo</td><td>400 × 160 px</td><td>PNG (transparent) or SVG</td><td>Wide format works best in the nav bar. Keep it horizontal.</td></tr>
+      <tr><td>Hero (homepage)</td><td>1920 × 1080 px</td><td>JPG or WebP</td><td>This is your biggest, most important photo — use your very best shot of the property.</td></tr>
+      <tr><td>OG / Share image</td><td>1200 × 630 px</td><td>JPG or WebP</td><td>Wide landscape format. Should look great as a thumbnail.</td></tr>
+      <tr><td>Named images (farmhouse, dining, etc.)</td><td>1200 × 900 px</td><td>JPG or WebP</td><td>4:3 ratio (landscape). These appear in content sections alongside text.</td></tr>
+      <tr><td>Room images</td><td>1200 × 900 px</td><td>JPG or WebP</td><td>4:3 ratio. Shoot from the corner of the room to show as much as possible.</td></tr>
+      <tr><td>Gallery images</td><td>1200 × 900 px or 900 × 1200 px</td><td>JPG or WebP</td><td>Both landscape and portrait work in the gallery grid.</td></tr>
+      <tr><td>Living &amp; Dining section</td><td>1200 × 900 px</td><td>JPG or WebP</td><td>4:3 landscape, showing the shared lounge or dining area.</td></tr>
+    </table>
+
+    <div class="tip"><span class="icon">💡</span><span>If your photos are too large (over 2–3 MB each), the site will still work but may load slowly on mobile. You can use a free tool like <strong>squoosh.app</strong> to resize and compress photos before uploading.</span></div>
+  </div>
+
+  <!-- 14 -->
+  <div class="section-block" id="s14">
+    <span class="section-number">Section 14</span>
+    <h2>Tips &amp; Common Questions</h2>
+
+    <h3>I made a change and don't see it on the site</h3>
+    <p>Most changes appear within a few seconds of saving. If you don't see the update, try a <strong>hard refresh</strong> in your browser: hold <kbd>Ctrl</kbd> and press <kbd>F5</kbd> on Windows, or hold <kbd>⌘ Cmd</kbd> + <kbd>Shift</kbd> and press <kbd>R</kbd> on a Mac. This forces the browser to reload fresh content.</p>
+
+    <h3>I clicked Save but nothing happened</h3>
+    <p>Check for a red error message just below the section title. If one appears, read it — it usually explains what went wrong. If you're not sure, take a screenshot and send it to MD Works.</p>
+
+    <h3>Do I need to tell MD Works every time I make a change?</h3>
+    <p>No — the admin panel is designed for you to use independently. Make changes whenever you like. The only time you need MD Works is if something isn't working, or if you want to add a feature that isn't already there.</p>
+
+    <h3>Can guests see what I'm doing in the admin panel?</h3>
+    <p>No. The admin panel is completely separate from the public website. Guests cannot access it and will never know it exists.</p>
+
+    <h3>What happens if I accidentally delete something?</h3>
+    <p>For text content (headings, paragraphs, rates), you can retype what was there and save again. For images that have been deleted from the gallery, they are gone permanently — which is why we recommend keeping your original photos backed up. For bookings, deleted records cannot be recovered, but your WhatsApp conversation is always there as a backup.</p>
+
+    <h3>Can I edit the site on my phone?</h3>
+    <p>Yes. The admin panel works on mobile browsers, though it's more comfortable on a tablet or desktop. For uploading photos, your phone is actually the easiest option — you can take a photo and upload it directly from the camera roll.</p>
+
+    <h3>Something looks broken — what do I do?</h3>
+    <p>Take a screenshot showing the issue, note which page or admin section it's on, and send it to MD Works via WhatsApp or email. Most issues can be fixed remotely within a few hours.</p>
+
+    <hr>
+
+    <h3>Contact MD Works</h3>
+    <p>For any technical questions, bugs, or new feature requests:</p>
+    <ul>
+      <li><strong>Developer:</strong> MD Works</li>
+      <li><strong>Email:</strong> hello@mdworks.co.za</li>
+    </ul>
+
+    <div class="tip"><span class="icon">💡</span><span>When reporting a problem, always include: which admin section you were in, what you were trying to do, and a screenshot if possible. This helps us fix things faster.</span></div>
+  </div>
+
+  <div class="doc-footer">
+    <p>Perry's @ Umdoni Point — Admin Guide · September 2026 · Prepared by MD Works</p>
+    <p style="margin-top:.35rem;">For technical support: hello@mdworks.co.za</p>
+  </div>
+
+</div>
+</body>
+</html>
