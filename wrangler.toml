@@ -1,18 +1,10 @@
-name = "perrys-umdonipoint-worker"
+name = "mdworks-hospitality-worker"
 main = "worker/index.js"
 compatibility_date = "2024-01-01"
 
-# KV namespace — run: wrangler kv namespace create CONTENT
-# then paste the id below
 [[kv_namespaces]]
 binding = "CONTENT"
-id = "cc514e1c6d7b4716b8a11c100bda9a9c"
+id = "19973468f54b4708b9e852d70eab6c39"
 
-# ImageKit URL endpoint (not secret — just a base URL)
-# Format: https://ik.imagekit.io/YOUR_IMAGEKIT_ID
 [vars]
 IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/iq9ymgpz2g"
-
-# Secrets — set these via CLI, never put values in this file:
-#   wrangler secret put ADMIN_TOKEN
-#   wrangler secret put IMAGEKIT_PRIVATE_KEY
