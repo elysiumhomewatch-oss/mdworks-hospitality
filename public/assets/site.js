@@ -353,12 +353,24 @@ async function initRoomsSections() {
 async function initSiteIdentity() {
   const c = await getContent();
   const identity = c.siteIdentity || {};
-  if (!identity.logoImage) return;
 
-  document.querySelectorAll('.nav-logo').forEach(el => {
-    // Preserve the href and aria-label; replace inner content with img
-    el.innerHTML = `<img src="${identity.logoImage}" alt="${identity.siteName || "Perry's @ Umdoni Point"}" class="nav-logo-img">`;
-  });
+  // Logo injection
+  if (identity.logoImage) {
+    document.querySelectorAll('.nav-logo').forEach(el => {
+      el.innerHTML = `<img src="${identity.logoImage}" alt="${identity.siteName || "Perry's @ Umdoni Point"}" class="nav-logo-img">`;
+    });
+  }
+
+  // Property type injection — replaces every [data-property-type] element's text
+  // e.g. "Farmhouse" → whatever Debbi sets in Site Settings
+  if (identity.propertyType) {
+    document.querySelectorAll('[data-property-type]').forEach(el => {
+      // Replace only the text node, preserving any child elements
+      el.textContent = el.dataset.propertyTypeCase === 'lower'
+        ? identity.propertyType.toLowerCase()
+        : identity.propertyType;
+    });
+  }
 }
 
 // ─── Nav active state ──────────────────────────────────────────────────────────

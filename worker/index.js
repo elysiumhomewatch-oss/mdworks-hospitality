@@ -260,6 +260,7 @@ const DEFAULTS = {
     siteName: "Perry's @ Umdoni Point",
     tagline: 'Boutique Coastal Forest Getaway',
     footerTagline: 'Boutique Coastal Forest Getaway in the historic Barker Farmhouse, Pennington, KwaZulu-Natal South Coast.',
+    propertyType: 'Farmhouse', // Used wherever "Farmhouse" appears on the site
   },
   pending: {
     // Debbi's outstanding items — visible in admin dashboard

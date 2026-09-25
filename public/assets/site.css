@@ -468,7 +468,11 @@ section { padding: 5rem 1.5rem; }
   .why-list { grid-template-columns: 1fr; }
 }
 
+/* ─── Mobile-first overrides (≤ 700px) ───────────────────────────────────── */
+
 @media (max-width: 700px) {
+
+  /* Nav */
   #nav-menu {
     display: none;
     position: absolute;
@@ -479,13 +483,73 @@ section { padding: 5rem 1.5rem; }
     flex-direction: column;
     padding: 1rem 0;
     border-top: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
   }
   #nav-menu.open { display: flex; }
   #nav-burger { display: block; }
-  .nav-book { margin: .5rem 1rem; }
+  .nav-link { padding: .85rem 1.5rem; font-size: .9rem; }
+  .nav-book { margin: .5rem 1rem; text-align: center; }
+
+  /* Sections */
+  section { padding: 3rem 1.25rem; }
+  .cta-section { padding: 3rem 1.25rem; }
+  .page-hero { padding: 2.5rem 1.25rem; }
+
+  /* Hero */
+  .hero { min-height: 75vh; }
+  .hero-content { padding: 1.5rem 1.25rem; }
+  .hero-ctas { flex-direction: column; align-items: center; }
+  .hero-ctas .btn { width: 100%; max-width: 280px; text-align: center; }
+
+  /* Grids — also override inline styles set on section divs */
   .grid-2, .grid-3, .facilities-grid { grid-template-columns: 1fr; }
-  .footer-inner { grid-template-columns: 1fr; }
+
+  /* Override inline grid styles on section content divs */
+  .section-inner > div[style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+
+  /* Why Perry's list */
+  .why-list { grid-template-columns: 1fr; gap: .75rem; }
+
+  /* Room cards */
+  .room-card-body .btn { width: 100%; text-align: center; }
+
+  /* Buttons */
+  .cta-btns { flex-direction: column; align-items: center; }
+  .cta-btns .btn, .cta-btns .whatsapp-btn { width: 100%; max-width: 300px; justify-content: center; }
+
+  /* Booking form */
+  .booking-form { padding: 1.5rem 1.25rem; }
   .form-grid { grid-template-columns: 1fr; }
-  section { padding: 3rem 1.5rem; }
-  .hero { min-height: 70vh; }
+
+  /* Footer */
+  .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: .75rem; }
+  .footer-legal a:first-child { margin-left: 0; }
+
+  /* Rates table — allow horizontal scroll on small screens */
+  .rates-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .rates-table { min-width: 400px; }
+
+  /* Specials banner */
+  #specials-banner { font-size: .82rem; }
+  .banner-cta { display: block; margin: .5rem auto 0; width: fit-content; }
+
+  /* Touch target minimums */
+  .btn { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+  .nav-link { min-height: 44px; display: flex; align-items: center; }
+}
+
+/* ─── Small phones (≤ 400px) ─────────────────────────────────────────────── */
+
+@media (max-width: 400px) {
+  body { font-size: 15px; }
+  .nav-inner { padding: 0 1rem; }
+  section { padding: 2.5rem 1rem; }
+  .hero-content h1 { font-size: 1.9rem; }
+  .section-title { font-size: 1.6rem; }
+  .booking-form { padding: 1.25rem 1rem; }
 }

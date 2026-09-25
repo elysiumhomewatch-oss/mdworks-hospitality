@@ -378,6 +378,21 @@
             <p id="logo-upload-label">Upload logo (PNG, SVG, JPG, WebP)</p>
             <p style="font-size:.72rem; margin-top:.25rem;">Recommended: 400×160 px · transparent PNG</p>
           </div>
+
+          <!-- Property type -->
+          <div style="margin-top:1.75rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+            <div class="card-title" style="margin-bottom:.4rem;">Property Type Label</div>
+            <p style="color:var(--muted); font-size:.82rem; margin-bottom:1rem;">
+              This word appears throughout the site wherever the property is described — e.g. "the historic <strong>Farmhouse</strong>". Change it here if the property type name changes.
+            </p>
+            <div class="form-row" style="max-width:320px;">
+              <div class="form-group">
+                <label>Property Type</label>
+                <input type="text" id="identity-property-type" placeholder="Farmhouse">
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" style="margin-top:.5rem;" onclick="savePropertyType()">Save Property Type</button>
+          </div>
         </div>
 
         <div class="card">
@@ -885,7 +900,12 @@ async function loadPage(page) {
   const c = await getContent();
   if (page === 'dashboard')  renderDashboard(c);
   if (page === 'bookings')   renderBookings();
-  if (page === 'meta')       { fillForm('meta-form', c.meta || {}); renderLogoPreview(c.siteIdentity || {}); }
+  if (page === 'meta') {
+    fillForm('meta-form', c.meta || {});
+    renderLogoPreview(c.siteIdentity || {});
+    const ptEl = document.getElementById('identity-property-type');
+    if (ptEl) ptEl.value = (c.siteIdentity || {}).propertyType || 'Farmhouse';
+  }
   if (page === 'specials')   fillForm('specials-form', c.specials || {});
   if (page === 'story')      fillForm('story-form', c.story || {});
   if (page === 'page-content') {
@@ -1201,6 +1221,16 @@ async function clearLDImage() {
 }
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
+
+async function savePropertyType() {
+  const val = document.getElementById('identity-property-type').value.trim();
+  if (!val) return;
+  const c = await getContent();
+  const identity = { ...(c.siteIdentity || {}), propertyType: val };
+  const r = await saveContent('siteIdentity', identity);
+  _content = null;
+  showAlert('logo-alert', r.success ? 'Property type saved.' : `Save failed: ${r.error}`, r.success ? 'success' : 'error');
+}
 
 function renderLogoPreview(identity) {
   const wrap = document.getElementById('logo-preview-wrap');
@@ -1602,5 +1632,511 @@ async function savePending() {
   _content = null;
 }
 </script>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     GROQ ADMIN CHATBOT
+     - API key stored in localStorage only, never sent to the Worker
+     - Models fetched live from Groq API, filtered to chat-capable models
+     - Answers questions about the admin panel using guide content as context
+     ══════════════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── Chat button ── */
+  #chat-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    z-index: 1000;
+    transition: transform .2s, background .2s;
+  }
+  #chat-fab:hover { background: var(--gold-lt); transform: scale(1.08); }
+  #chat-fab .chat-badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 14px; height: 14px;
+    background: #e74c3c;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    display: none;
+  }
+
+  /* ── Chat panel ── */
+  #chat-panel {
+    position: fixed;
+    bottom: 5rem;
+    right: 1.5rem;
+    width: 380px;
+    max-width: calc(100vw - 2rem);
+    max-height: 70vh;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    display: none;
+    flex-direction: column;
+    z-index: 999;
+    overflow: hidden;
+  }
+  #chat-panel.open { display: flex; }
+
+  .chat-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: .9rem 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .chat-header-left { display: flex; align-items: center; gap: .6rem; }
+  .chat-header-left span { font-size: 1.2rem; }
+  .chat-header h3 { font-size: .92rem; font-weight: 600; color: var(--white); font-family: var(--font-body); }
+  .chat-header p  { font-size: .72rem; color: rgba(255,255,255,.6); margin: 0; }
+  .chat-close-btn { background: none; border: none; color: rgba(255,255,255,.7); cursor: pointer; font-size: 1.1rem; padding: .2rem; }
+  .chat-close-btn:hover { color: var(--white); }
+
+  /* Setup screen */
+  #chat-setup {
+    padding: 1.25rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+  .chat-setup-intro { font-size: .88rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.6; }
+  .chat-setup-intro a { color: var(--gold); font-weight: 600; }
+  .chat-field { margin-bottom: .75rem; }
+  .chat-field label { display: block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--navy); margin-bottom: .3rem; }
+  .chat-field input, .chat-field select {
+    width: 100%;
+    padding: .55rem .8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: .88rem;
+    color: var(--text);
+    background: var(--cream);
+  }
+  .chat-field input:focus, .chat-field select:focus { outline: none; border-color: var(--gold); background: var(--white); }
+  .chat-field input[type="password"] { letter-spacing: .1em; }
+  #chat-model-row { display: none; }
+  #chat-setup-btn { width: 100%; margin-top: .5rem; }
+  #chat-setup-error { color: #922; font-size: .8rem; margin-top: .5rem; display: none; }
+
+  /* Chat messages */
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: none;
+    flex-direction: column;
+    gap: .75rem;
+    scroll-behavior: smooth;
+  }
+  #chat-messages.active { display: flex; }
+
+  .msg {
+    max-width: 85%;
+    padding: .65rem .9rem;
+    border-radius: 10px;
+    font-size: .87rem;
+    line-height: 1.55;
+  }
+  .msg-user {
+    background: var(--navy);
+    color: var(--white);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .msg-bot {
+    background: var(--cream);
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .msg-bot a { color: var(--gold); }
+  .msg-typing { opacity: .6; font-style: italic; }
+
+  /* Chat input */
+  #chat-input-row {
+    display: none;
+    padding: .75rem;
+    border-top: 1px solid var(--border);
+    gap: .5rem;
+    flex-shrink: 0;
+  }
+  #chat-input-row.active { display: flex; }
+  #chat-input {
+    flex: 1;
+    padding: .55rem .8rem;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-size: .88rem;
+    color: var(--text);
+    background: var(--cream);
+    resize: none;
+    outline: none;
+  }
+  #chat-input:focus { border-color: var(--gold); background: var(--white); }
+  #chat-send-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    color: var(--navy);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+  #chat-send-btn:hover { background: var(--gold-lt); }
+  #chat-send-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* Footer inside chat */
+  .chat-footer {
+    padding: .4rem .75rem;
+    font-size: .68rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .chat-footer a { color: var(--muted); }
+  .chat-footer a:hover { color: var(--gold); }
+  #chat-clear-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: .68rem; }
+  #chat-clear-btn:hover { color: var(--gold); }
+</style>
+
+<!-- Floating button -->
+<button id="chat-fab" onclick="toggleChat()" title="Ask a question about the admin panel">
+  💬
+  <span class="chat-badge" id="chat-badge"></span>
+</button>
+
+<!-- Chat panel -->
+<div id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <span>🤖</span>
+      <div>
+        <h3>Admin Assistant</h3>
+        <p id="chat-model-label">Powered by Groq</p>
+      </div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+
+  <!-- Setup screen (shown until key + model are saved) -->
+  <div id="chat-setup">
+    <p class="chat-setup-intro">
+      Your Admin Assistant uses the <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq free API</a> to answer questions about how the admin panel works. Your API key is stored only on this device and is never sent anywhere except directly to Groq.
+    </p>
+    <p class="chat-setup-intro" style="margin-bottom:1.25rem;">
+      👉 <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Get a free Groq API key →</a>
+    </p>
+    <div class="chat-field">
+      <label>Groq API Key</label>
+      <input type="password" id="chat-api-key" placeholder="gsk_..." autocomplete="off" oninput="onKeyInput()">
+    </div>
+    <div class="chat-field" id="chat-model-row">
+      <label>Model</label>
+      <select id="chat-model-select">
+        <option value="">Loading models…</option>
+      </select>
+    </div>
+    <div id="chat-setup-error"></div>
+    <button class="btn btn-primary" id="chat-setup-btn" onclick="saveGroqSetup()" disabled>Save &amp; Start Chatting</button>
+  </div>
+
+  <!-- Messages area -->
+  <div id="chat-messages"></div>
+
+  <!-- Input row -->
+  <div id="chat-input-row">
+    <textarea id="chat-input" rows="1" placeholder="Ask anything about the admin panel…" onkeydown="chatKeydown(event)"></textarea>
+    <button id="chat-send-btn" onclick="sendChatMessage()">➤</button>
+  </div>
+
+  <div class="chat-footer">
+    <span>Key stored locally · <a href="https://console.groq.com/keys" target="_blank">Manage keys</a></span>
+    <button id="chat-clear-btn" onclick="clearGroqSetup()">Reset key</button>
+  </div>
+</div>
+
+<script>
+// ─── Groq Chatbot ─────────────────────────────────────────────────────────────
+
+// Models that work well for chat at Groq free tier — filter this list from API
+const GROQ_CHAT_MODELS = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-70b-versatile',
+  'llama-3.1-8b-instant',
+  'llama3-70b-8192',
+  'llama3-8b-8192',
+  'mixtral-8x7b-32768',
+  'gemma2-9b-it',
+  'gemma-7b-it',
+];
+
+const GROQ_API = 'https://api.groq.com/openai/v1';
+const LS_KEY   = 'perrys_groq_key';
+const LS_MODEL = 'perrys_groq_model';
+
+let chatHistory = [];
+let groqKey   = localStorage.getItem(LS_KEY)   || '';
+let groqModel = localStorage.getItem(LS_MODEL) || '';
+
+// System prompt — distilled from the admin guide
+const SYSTEM_PROMPT = `You are the Admin Assistant for Perry's @ Umdoni Point, a boutique guesthouse website. You help Debbi (the owner) and Athol understand how to use the website admin panel at perrys.pages.dev/admin/.
+
+You are friendly, clear and non-technical. Always use plain English. When giving instructions, use numbered steps.
+
+Key facts about the admin panel:
+- Login: go to perrys.pages.dev/admin/ and enter the password
+- Dashboard: shows booking stats, recent bookings, and the outstanding items checklist
+- All Bookings: view, filter, confirm, cancel or delete booking enquiries. Delete is permanent.
+- Site Settings: update phone, WhatsApp, email, address, social links, Google Maps embed, site logo (PNG, 400x160px recommended), and property type label (e.g. "Farmhouse")
+- Specials Banner: a strip at the top of every page — toggle on/off, edit title, body and CTA button. Toggle off to hide without losing content.
+- Our Story: edit the headline and main body text for the Our Story page. Separate paragraphs with a blank line.
+- Page Content: edit text sections across 4 pages via tabs — Home, Our Story, Experience, Rooms. Each tab has a Save button. The Rooms tab includes the Living & Dining section toggle (hidden until enabled).
+- Rooms: edit all 5 room cards — name, bed type, occupancy, description, amenities, placeholder toggle, and room photo. Click "Save All Rooms" when done.
+- Rates: edit accommodation packages (standard/weekend/peak prices) and laundry prices. Add/remove rows. Click "Save Rates".
+- Things To Do: add, edit or remove activity cards. Click "Save Things To Do".
+- Images: 8 named image slots (hero, OG image, farmhouse, farmhouse exterior, Kayla Ann, dining, golf, whales) + gallery grid. Gallery uploads immediately, named images need to be set per slot.
+- Pending Items: private checklist of outstanding tasks. Tick and save to mark complete.
+- Admin Guide: full help document available at perrys.pages.dev/admin/guide.html
+
+Image size guidance:
+- Logo: 400x160px, transparent PNG
+- Hero: 1920x1080px, JPG
+- Named images: 1200x900px, JPG
+- Gallery: 1200x900px landscape or 900x1200px portrait
+- Max file size: 1MB for photos, 500KB for logo
+
+If you don't know something specific, say so honestly and suggest checking the guide at perrys.pages.dev/admin/guide.html.
+Keep answers concise. For multi-step tasks, use numbered steps.`;
+
+// ── Panel toggle ──────────────────────────────────────────────────────────────
+
+function toggleChat() {
+  const panel = document.getElementById('chat-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    if (groqKey && groqModel) {
+      showChatUI();
+    } else if (groqKey) {
+      fetchGroqModels(groqKey);
+    }
+    document.getElementById('chat-badge').style.display = 'none';
+  }
+}
+
+// ── Setup flow ────────────────────────────────────────────────────────────────
+
+let _keyTimer = null;
+function onKeyInput() {
+  const key = document.getElementById('chat-api-key').value.trim();
+  document.getElementById('chat-setup-btn').disabled = true;
+  document.getElementById('chat-model-row').style.display = 'none';
+  document.getElementById('chat-setup-error').style.display = 'none';
+  clearTimeout(_keyTimer);
+  if (key.length < 20) return;
+  _keyTimer = setTimeout(() => fetchGroqModels(key), 600);
+}
+
+async function fetchGroqModels(key) {
+  const errEl = document.getElementById('chat-setup-error');
+  errEl.style.display = 'none';
+  try {
+    const r = await fetch(`${GROQ_API}/models`, {
+      headers: { Authorization: `Bearer ${key}` }
+    });
+    if (!r.ok) throw new Error(`Invalid key (${r.status})`);
+    const data = await r.json();
+
+    // Filter to known chat-capable models that appear in the API response
+    const available = (data.data || []).map(m => m.id);
+    const filtered = GROQ_CHAT_MODELS.filter(m => available.includes(m));
+
+    if (filtered.length === 0) throw new Error('No compatible chat models found on this key.');
+
+    const sel = document.getElementById('chat-model-select');
+    sel.innerHTML = filtered.map(m => `<option value="${m}">${m}</option>`).join('');
+
+    // Pre-select saved model if available
+    if (groqModel && filtered.includes(groqModel)) sel.value = groqModel;
+    else sel.value = filtered[0];
+
+    document.getElementById('chat-model-row').style.display = 'block';
+    document.getElementById('chat-setup-btn').disabled = false;
+  } catch (err) {
+    errEl.textContent = `Could not connect to Groq: ${err.message}`;
+    errEl.style.display = 'block';
+  }
+}
+
+function saveGroqSetup() {
+  const key   = document.getElementById('chat-api-key').value.trim();
+  const model = document.getElementById('chat-model-select').value;
+  if (!key || !model) return;
+  localStorage.setItem(LS_KEY,   key);
+  localStorage.setItem(LS_MODEL, model);
+  groqKey   = key;
+  groqModel = model;
+  showChatUI();
+}
+
+function clearGroqSetup() {
+  localStorage.removeItem(LS_KEY);
+  localStorage.removeItem(LS_MODEL);
+  groqKey = groqModel = '';
+  chatHistory = [];
+  document.getElementById('chat-setup').style.display = 'block';
+  document.getElementById('chat-messages').classList.remove('active');
+  document.getElementById('chat-input-row').classList.remove('active');
+  document.getElementById('chat-api-key').value = '';
+  document.getElementById('chat-model-row').style.display = 'none';
+  document.getElementById('chat-setup-btn').disabled = true;
+  document.getElementById('chat-model-label').textContent = 'Powered by Groq';
+}
+
+function showChatUI() {
+  document.getElementById('chat-setup').style.display = 'none';
+  document.getElementById('chat-messages').classList.add('active');
+  document.getElementById('chat-input-row').classList.add('active');
+  document.getElementById('chat-model-label').textContent = groqModel;
+  if (chatHistory.length === 0) {
+    appendBotMessage("Hi Debbi! 👋 I'm your Admin Assistant. Ask me anything about how to use the admin panel — bookings, content, photos, settings, or anything else.");
+  }
+  setTimeout(() => document.getElementById('chat-input').focus(), 100);
+}
+
+// ── Messaging ─────────────────────────────────────────────────────────────────
+
+function appendUserMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendBotMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot';
+  // Simple markdown-ish: bold, numbered lists, line breaks
+  div.innerHTML = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot msg-typing';
+  div.id = 'chat-typing';
+  div.textContent = '…';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text || !groqKey || !groqModel) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  appendUserMessage(text);
+
+  chatHistory.push({ role: 'user', content: text });
+
+  const sendBtn = document.getElementById('chat-send-btn');
+  sendBtn.disabled = true;
+  const typingEl = appendTyping();
+
+  try {
+    const r = await fetch(`${GROQ_API}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${groqKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: groqModel,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...chatHistory.slice(-12), // keep last 12 turns for context
+        ],
+        max_tokens: 600,
+        temperature: 0.4,
+      }),
+    });
+
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Groq error ${r.status}`);
+    }
+
+    const data = await r.json();
+    const reply = data.choices?.[0]?.message?.content || 'Sorry, I got an empty response.';
+    chatHistory.push({ role: 'assistant', content: reply });
+
+    typingEl.remove();
+    appendBotMessage(reply);
+  } catch (err) {
+    typingEl.remove();
+    appendBotMessage(`⚠️ ${err.message}. Check your API key or try again.`);
+    // If auth error, offer to reset
+    if (err.message.includes('401') || err.message.includes('auth')) {
+      setTimeout(() => {
+        appendBotMessage('Your API key may have expired. Click **Reset key** at the bottom to enter a new one.');
+      }, 300);
+    }
+  } finally {
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+// ── Init on load ──────────────────────────────────────────────────────────────
+
+(function initChat() {
+  if (groqKey && groqModel) {
+    // Key already saved — show badge to indicate assistant is ready
+    document.getElementById('chat-badge').style.display = 'block';
+  }
+})();
+</script>
+
 </body>
 </html>
