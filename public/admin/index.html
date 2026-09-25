@@ -268,6 +268,9 @@
       <div class="nav-item" data-page="story">
         <span class="icon">📖</span> Our Story
       </div>
+      <div class="nav-item" data-page="page-content">
+        <span class="icon">📄</span> Page Content
+      </div>
       <div class="nav-item" data-page="rooms">
         <span class="icon">🛏️</span> Rooms
       </div>
@@ -448,6 +451,245 @@
         </div>
       </div>
 
+      <!-- ── PAGE CONTENT ── -->
+      <div class="page" id="page-page-content">
+
+        <!-- Page tabs -->
+        <div style="display:flex; gap:.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+          <button class="btn btn-sm btn-navy pc-tab active" data-tab="home"      onclick="switchPCTab('home')">🏠 Home</button>
+          <button class="btn btn-sm btn-navy pc-tab"        data-tab="about"     onclick="switchPCTab('about')">📖 Our Story</button>
+          <button class="btn btn-sm btn-navy pc-tab"        data-tab="experience"onclick="switchPCTab('experience')">✨ Experience</button>
+          <button class="btn btn-sm btn-navy pc-tab"        data-tab="rooms"     onclick="switchPCTab('rooms')">🛏️ Rooms</button>
+        </div>
+        <div id="pc-alert"></div>
+
+        <!-- ── HOME ── -->
+        <div class="pc-panel" id="pc-home">
+          <div class="card">
+            <div class="card-title">Hero Section</div>
+            <div class="form-row full">
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-home-hero-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Subtext</label><input type="text" id="pc-home-hero-subtext"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Intro Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-home-intro-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-home-intro-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 1</label><textarea id="pc-home-intro-body1" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 2</label><textarea id="pc-home-intro-body2" style="min-height:80px;"></textarea></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Why Perry's Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-home-why-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-home-why-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Subtext</label><input type="text" id="pc-home-why-subtext"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>List Items (one per line, 6 items)</label>
+                <textarea id="pc-home-why-items" style="min-height:140px;" placeholder="One item per line"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Experience Teaser Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-home-exp-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-home-exp-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><textarea id="pc-home-exp-body" style="min-height:80px;"></textarea></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">CTA Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-home-cta-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-home-cta-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><input type="text" id="pc-home-cta-body"></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="savePageContent('homeSections', buildHomeSections())">Save Home Content</button>
+        </div>
+
+        <!-- ── ABOUT ── -->
+        <div class="pc-panel" id="pc-about" style="display:none;">
+          <div class="card">
+            <div class="card-title">Kayla Ann Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-about-ka-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-about-ka-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 1</label><textarea id="pc-about-ka-body1" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 2</label><textarea id="pc-about-ka-body2" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Note (italic)</label><input type="text" id="pc-about-ka-note"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Perry's Way Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-about-pw-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-about-pw-heading"></div>
+            </div>
+            <p style="font-size:.82rem; color:var(--muted); margin-bottom:1rem;">Three pillars — emoji, heading and body for each.</p>
+            <div id="pc-about-pillars">
+              <div class="form-row" style="margin-bottom:.75rem; align-items:end;">
+                <div class="form-group" style="flex:0 0 60px;"><label>Emoji</label><input type="text" id="pc-pillar-0-emoji" maxlength="4"></div>
+                <div class="form-group"><label>Heading</label><input type="text" id="pc-pillar-0-heading"></div>
+                <div class="form-group"><label>Body</label><input type="text" id="pc-pillar-0-body"></div>
+              </div>
+              <div class="form-row" style="margin-bottom:.75rem; align-items:end;">
+                <div class="form-group" style="flex:0 0 60px;"><label>Emoji</label><input type="text" id="pc-pillar-1-emoji" maxlength="4"></div>
+                <div class="form-group"><label>Heading</label><input type="text" id="pc-pillar-1-heading"></div>
+                <div class="form-group"><label>Body</label><input type="text" id="pc-pillar-1-body"></div>
+              </div>
+              <div class="form-row" style="align-items:end;">
+                <div class="form-group" style="flex:0 0 60px;"><label>Emoji</label><input type="text" id="pc-pillar-2-emoji" maxlength="4"></div>
+                <div class="form-group"><label>Heading</label><input type="text" id="pc-pillar-2-heading"></div>
+                <div class="form-group"><label>Body</label><input type="text" id="pc-pillar-2-body"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">CTA Section</div>
+            <div class="form-row full">
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-about-cta-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><input type="text" id="pc-about-cta-body"></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="savePageContent('aboutSections', buildAboutSections())">Save About Content</button>
+        </div>
+
+        <!-- ── EXPERIENCE ── -->
+        <div class="pc-panel" id="pc-experience" style="display:none;">
+          <div class="card">
+            <div class="card-title">Dining Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-exp-dining-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-exp-dining-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 1</label><textarea id="pc-exp-dining-body1" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Paragraph 2</label><textarea id="pc-exp-dining-body2" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Note (italic)</label><input type="text" id="pc-exp-dining-note"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Facilities Section</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-exp-fac-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-exp-fac-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Intro paragraph</label><textarea id="pc-exp-fac-intro" style="min-height:80px;"></textarea></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Footer note (italic)</label><input type="text" id="pc-exp-fac-note"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">CTA Section</div>
+            <div class="form-row full">
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-exp-cta-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><input type="text" id="pc-exp-cta-body"></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="savePageContent('experienceSections', buildExperienceSections())">Save Experience Content</button>
+        </div>
+
+        <!-- ── ROOMS ── -->
+        <div class="pc-panel" id="pc-rooms" style="display:none;">
+          <div class="card">
+            <div class="card-title">Intro Text</div>
+            <div class="form-row full">
+              <div class="form-group"><label>Intro paragraph</label><textarea id="pc-rooms-intro-body" style="min-height:80px;"></textarea></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Standard Inclusions</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-rooms-inc-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-rooms-inc-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Items (one per line, 9 items across 3 columns)</label>
+                <textarea id="pc-rooms-inc-items" style="min-height:160px;" placeholder="One item per line"></textarea>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Note (italic, below list)</label><input type="text" id="pc-rooms-inc-note"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Rates Teaser</div>
+            <div class="form-row">
+              <div class="form-group"><label>Label</label><input type="text" id="pc-rooms-rates-label"></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-rooms-rates-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><textarea id="pc-rooms-rates-body" style="min-height:60px;"></textarea></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Living &amp; Dining Section</div>
+            <p style="font-size:.82rem; color:var(--muted); margin-bottom:1rem;">This section is hidden until you enable it. Add content and an image, then toggle it on.</p>
+            <div class="form-row full" style="margin-bottom:1rem;">
+              <label style="display:flex; align-items:center; gap:.75rem; cursor:pointer; font-weight:600;">
+                <input type="checkbox" id="pc-rooms-ld-enabled" style="width:18px; height:18px;">
+                Show Living &amp; Dining section on Rooms page
+              </label>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Heading</label><input type="text" id="pc-rooms-ld-heading"></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label>Body</label><textarea id="pc-rooms-ld-body" style="min-height:100px;"></textarea></div>
+            </div>
+            <!-- Image upload for Living & Dining -->
+            <div id="ld-img-preview-wrap" style="margin:1rem 0; display:none;">
+              <img id="ld-img-preview" src="" alt="Living & Dining preview" style="max-width:300px; max-height:200px; object-fit:cover; border-radius:4px; border:1px solid var(--border);">
+              <button class="btn btn-sm btn-danger" style="display:block; margin-top:.5rem;" onclick="clearLDImage()">Remove image</button>
+            </div>
+            <div class="upload-zone" style="max-width:400px;" onclick="triggerLDUpload()">
+              <input type="file" id="ld-img-file" accept="image/*" onchange="uploadLDImage(event)">
+              <div style="font-size:1.5rem;">🖼️</div>
+              <p id="ld-upload-label">Upload Living &amp; Dining image</p>
+              <p style="font-size:.72rem; margin-top:.25rem;">Recommended: 1200×900 px (4:3) · JPG or WebP · max 1 MB</p>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="savePageContent('roomsSections', buildRoomsSections())">Save Rooms Content</button>
+        </div>
+
+      </div>
+
       <!-- ── ROOMS ── -->
       <div class="page" id="page-rooms">
         <div class="card">
@@ -614,7 +856,8 @@ async function saveContent(key, value) {
 
 const titles = {
   dashboard: 'Dashboard', bookings: 'All Bookings', meta: 'Site Settings',
-  specials: 'Specials Banner', story: 'Our Story', rooms: 'Rooms',
+  specials: 'Specials Banner', story: 'Our Story', 'page-content': 'Page Content',
+  rooms: 'Rooms',
   rates: 'Rates', things: 'Things To Do', images: 'Images', pending: 'Pending Items',
 };
 
@@ -645,6 +888,12 @@ async function loadPage(page) {
   if (page === 'meta')       { fillForm('meta-form', c.meta || {}); renderLogoPreview(c.siteIdentity || {}); }
   if (page === 'specials')   fillForm('specials-form', c.specials || {});
   if (page === 'story')      fillForm('story-form', c.story || {});
+  if (page === 'page-content') {
+    fillPCHome(c.homeSections || {});
+    fillPCAbout(c.aboutSections || {});
+    fillPCExperience(c.experienceSections || {});
+    fillPCRooms(c.roomsSections || {});
+  }
   if (page === 'rooms')      renderRoomsEditor(c.rooms || []);
   if (page === 'rates')      renderRatesEditor(c.rates || [], c.ratesNotes || '', c.laundry || []);
   if (page === 'things')     renderThingsEditor(c.thingsToDo || []);
@@ -786,6 +1035,169 @@ function showAlert(id, msg, type = 'success') {
   if (!el) return;
   el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
   setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+// ─── Page Content ─────────────────────────────────────────────────────────────
+
+function switchPCTab(tab) {
+  document.querySelectorAll('.pc-tab').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.pc-tab[data-tab="${tab}"]`)?.classList.add('active');
+  document.querySelectorAll('.pc-panel').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById(`pc-${tab}`);
+  if (panel) panel.style.display = '';
+}
+
+function fillPCHome(s) {
+  const h = s.hero || {}, i = s.intro || {}, w = s.whyPerrys || {}, e = s.experienceTeaser || {}, c = s.cta || {};
+  document.getElementById('pc-home-hero-heading').value  = h.heading  || '';
+  document.getElementById('pc-home-hero-subtext').value  = h.subtext  || '';
+  document.getElementById('pc-home-intro-label').value   = i.label    || '';
+  document.getElementById('pc-home-intro-heading').value = i.heading  || '';
+  document.getElementById('pc-home-intro-body1').value   = i.body1    || '';
+  document.getElementById('pc-home-intro-body2').value   = i.body2    || '';
+  document.getElementById('pc-home-why-label').value     = w.label    || '';
+  document.getElementById('pc-home-why-heading').value   = w.heading  || '';
+  document.getElementById('pc-home-why-subtext').value   = w.subtext  || '';
+  document.getElementById('pc-home-why-items').value     = (w.items || []).join('\n');
+  document.getElementById('pc-home-exp-label').value     = e.label    || '';
+  document.getElementById('pc-home-exp-heading').value   = e.heading  || '';
+  document.getElementById('pc-home-exp-body').value      = e.body     || '';
+  document.getElementById('pc-home-cta-label').value     = c.label    || '';
+  document.getElementById('pc-home-cta-heading').value   = c.heading  || '';
+  document.getElementById('pc-home-cta-body').value      = c.body     || '';
+}
+
+function fillPCAbout(s) {
+  const ka = s.kaylaAnn || {}, pw = s.perrysWay || {}, c = s.cta || {};
+  document.getElementById('pc-about-ka-label').value    = ka.label   || '';
+  document.getElementById('pc-about-ka-heading').value  = ka.heading || '';
+  document.getElementById('pc-about-ka-body1').value    = ka.body1   || '';
+  document.getElementById('pc-about-ka-body2').value    = ka.body2   || '';
+  document.getElementById('pc-about-ka-note').value     = ka.note    || '';
+  document.getElementById('pc-about-pw-label').value    = pw.label   || '';
+  document.getElementById('pc-about-pw-heading').value  = pw.heading || '';
+  (pw.pillars || []).forEach((p, i) => {
+    const el = n => document.getElementById(`pc-pillar-${i}-${n}`);
+    if (el('emoji')) { el('emoji').value = p.emoji || ''; el('heading').value = p.heading || ''; el('body').value = p.body || ''; }
+  });
+  document.getElementById('pc-about-cta-heading').value = c.heading || '';
+  document.getElementById('pc-about-cta-body').value    = c.body    || '';
+}
+
+function fillPCExperience(s) {
+  const d = s.dining || {}, f = s.facilities || {}, c = s.cta || {};
+  document.getElementById('pc-exp-dining-label').value   = d.label   || '';
+  document.getElementById('pc-exp-dining-heading').value = d.heading || '';
+  document.getElementById('pc-exp-dining-body1').value   = d.body1   || '';
+  document.getElementById('pc-exp-dining-body2').value   = d.body2   || '';
+  document.getElementById('pc-exp-dining-note').value    = d.note    || '';
+  document.getElementById('pc-exp-fac-label').value      = f.label   || '';
+  document.getElementById('pc-exp-fac-heading').value    = f.heading || '';
+  document.getElementById('pc-exp-fac-intro').value      = f.intro   || '';
+  document.getElementById('pc-exp-fac-note').value       = f.note    || '';
+  document.getElementById('pc-exp-cta-heading').value    = c.heading || '';
+  document.getElementById('pc-exp-cta-body').value       = c.body    || '';
+}
+
+function fillPCRooms(s) {
+  const intro = s.intro || {}, inc = s.inclusions || {}, rt = s.ratesTeaser || {}, ld = s.livingDining || {};
+  document.getElementById('pc-rooms-intro-body').value    = intro.body    || '';
+  document.getElementById('pc-rooms-inc-label').value     = inc.label     || '';
+  document.getElementById('pc-rooms-inc-heading').value   = inc.heading   || '';
+  document.getElementById('pc-rooms-inc-items').value     = (inc.items || []).join('\n');
+  document.getElementById('pc-rooms-inc-note').value      = inc.note      || '';
+  document.getElementById('pc-rooms-rates-label').value   = rt.label      || '';
+  document.getElementById('pc-rooms-rates-heading').value = rt.heading    || '';
+  document.getElementById('pc-rooms-rates-body').value    = rt.body       || '';
+  document.getElementById('pc-rooms-ld-enabled').checked  = !!ld.enabled;
+  document.getElementById('pc-rooms-ld-heading').value    = ld.heading    || '';
+  document.getElementById('pc-rooms-ld-body').value       = ld.body       || '';
+  // Living & Dining image preview
+  const ldWrap = document.getElementById('ld-img-preview-wrap');
+  const ldImg  = document.getElementById('ld-img-preview');
+  const ldLbl  = document.getElementById('ld-upload-label');
+  if (ld.image) { ldImg.src = ld.image; ldWrap.style.display = 'block'; ldLbl.textContent = 'Replace image'; }
+  else { ldWrap.style.display = 'none'; ldLbl.textContent = 'Upload Living & Dining image'; }
+}
+
+function buildHomeSections() {
+  const v = id => document.getElementById(id)?.value || '';
+  return {
+    hero:             { heading: v('pc-home-hero-heading'), subtext: v('pc-home-hero-subtext') },
+    intro:            { label: v('pc-home-intro-label'), heading: v('pc-home-intro-heading'), body1: v('pc-home-intro-body1'), body2: v('pc-home-intro-body2') },
+    whyPerrys:        { label: v('pc-home-why-label'), heading: v('pc-home-why-heading'), subtext: v('pc-home-why-subtext'), items: v('pc-home-why-items').split('\n').map(s => s.trim()).filter(Boolean) },
+    experienceTeaser: { label: v('pc-home-exp-label'), heading: v('pc-home-exp-heading'), body: v('pc-home-exp-body') },
+    cta:              { label: v('pc-home-cta-label'), heading: v('pc-home-cta-heading'), body: v('pc-home-cta-body') },
+  };
+}
+
+function buildAboutSections() {
+  const v = id => document.getElementById(id)?.value || '';
+  const pillars = [0,1,2].map(i => ({ emoji: v(`pc-pillar-${i}-emoji`), heading: v(`pc-pillar-${i}-heading`), body: v(`pc-pillar-${i}-body`) }));
+  return {
+    kaylaAnn:  { label: v('pc-about-ka-label'), heading: v('pc-about-ka-heading'), body1: v('pc-about-ka-body1'), body2: v('pc-about-ka-body2'), note: v('pc-about-ka-note') },
+    perrysWay: { label: v('pc-about-pw-label'), heading: v('pc-about-pw-heading'), pillars },
+    cta:       { heading: v('pc-about-cta-heading'), body: v('pc-about-cta-body') },
+  };
+}
+
+function buildExperienceSections() {
+  const v = id => document.getElementById(id)?.value || '';
+  return {
+    dining:     { label: v('pc-exp-dining-label'), heading: v('pc-exp-dining-heading'), body1: v('pc-exp-dining-body1'), body2: v('pc-exp-dining-body2'), note: v('pc-exp-dining-note') },
+    facilities: { label: v('pc-exp-fac-label'), heading: v('pc-exp-fac-heading'), intro: v('pc-exp-fac-intro'), note: v('pc-exp-fac-note') },
+    cta:        { heading: v('pc-exp-cta-heading'), body: v('pc-exp-cta-body') },
+  };
+}
+
+function buildRoomsSections() {
+  const v = id => document.getElementById(id)?.value || '';
+  // preserve current image URL from KV (don't overwrite it on a text-only save)
+  const currentImage = document.getElementById('ld-img-preview').src.startsWith('http') ? document.getElementById('ld-img-preview').src : '';
+  return {
+    intro:        { body: v('pc-rooms-intro-body') },
+    inclusions:   { label: v('pc-rooms-inc-label'), heading: v('pc-rooms-inc-heading'), items: v('pc-rooms-inc-items').split('\n').map(s => s.trim()).filter(Boolean), note: v('pc-rooms-inc-note') },
+    ratesTeaser:  { label: v('pc-rooms-rates-label'), heading: v('pc-rooms-rates-heading'), body: v('pc-rooms-rates-body') },
+    livingDining: { enabled: document.getElementById('pc-rooms-ld-enabled').checked, heading: v('pc-rooms-ld-heading'), body: v('pc-rooms-ld-body'), image: currentImage },
+  };
+}
+
+async function savePageContent(key, data) {
+  showAlert('pc-alert', 'Saving…', 'info');
+  const r = await saveContent(key, data);
+  if (r.success) { _content = null; showAlert('pc-alert', 'Saved successfully.', 'success'); }
+  else showAlert('pc-alert', `Save failed: ${r.error}`, 'error');
+}
+
+// Living & Dining image upload
+function triggerLDUpload() { document.getElementById('ld-img-file').click(); }
+
+async function uploadLDImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('role', 'named');
+  fd.append('imageKey', 'livingDining');
+  fd.append('alt', 'Living and dining area at Perry\'s');
+  showAlert('pc-alert', 'Uploading image…', 'info');
+  try {
+    const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
+    const data = await r.json();
+    if (data.success) {
+      document.getElementById('ld-img-preview').src = data.url;
+      document.getElementById('ld-img-preview-wrap').style.display = 'block';
+      document.getElementById('ld-upload-label').textContent = 'Replace image';
+      showAlert('pc-alert', 'Image uploaded. Save Rooms Content to apply.', 'success');
+    } else { showAlert('pc-alert', `Upload failed: ${data.error}`, 'error'); }
+  } catch (err) { showAlert('pc-alert', `Upload error: ${err.message}`, 'error'); }
+}
+
+async function clearLDImage() {
+  document.getElementById('ld-img-preview').src = '';
+  document.getElementById('ld-img-preview-wrap').style.display = 'none';
+  document.getElementById('ld-upload-label').textContent = 'Upload Living & Dining image';
+  showAlert('pc-alert', 'Image removed. Save Rooms Content to apply.', 'info');
 }
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────

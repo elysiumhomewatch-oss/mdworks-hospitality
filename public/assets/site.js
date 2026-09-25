@@ -185,6 +185,166 @@ function initBookingForm() {
   });
 }
 
+// ─── Page section helpers ─────────────────────────────────────────────────────
+
+function setText(id, val)  { const el = document.getElementById(id); if (el && val) el.textContent = val; }
+function setHTML(id, val)  { const el = document.getElementById(id); if (el && val) el.innerHTML = val; }
+
+// ─── Home sections ────────────────────────────────────────────────────────────
+
+async function initHomeSections() {
+  if (!document.getElementById('home-hero-heading')) return; // not home page
+  const c = await getContent();
+  const s = c.homeSections || {};
+
+  // Hero
+  const hero = s.hero || {};
+  setText('home-hero-heading', hero.heading);
+  setText('home-hero-subtext',  hero.subtext);
+
+  // Intro
+  const intro = s.intro || {};
+  setText('home-intro-label',   intro.label);
+  setText('home-intro-heading', intro.heading);
+  setText('home-intro-body1',   intro.body1);
+  setText('home-intro-body2',   intro.body2);
+
+  // Why Perry's
+  const why = s.whyPerrys || {};
+  setText('home-why-label',   why.label);
+  setText('home-why-heading', why.heading);
+  setText('home-why-subtext', why.subtext);
+  const whyList = document.getElementById('home-why-list');
+  if (whyList && why.items && why.items.length) {
+    whyList.innerHTML = why.items.map(i => `<li>${i}</li>`).join('');
+  }
+
+  // Experience teaser
+  const exp = s.experienceTeaser || {};
+  setText('home-exp-label',   exp.label);
+  setText('home-exp-heading', exp.heading);
+  setText('home-exp-body',    exp.body);
+
+  // CTA
+  const cta = s.cta || {};
+  setText('home-cta-label',   cta.label);
+  setText('home-cta-heading', cta.heading);
+  setText('home-cta-body',    cta.body);
+}
+
+// ─── About sections ───────────────────────────────────────────────────────────
+
+async function initAboutSections() {
+  if (!document.getElementById('about-ka-heading')) return; // not about page
+  const c = await getContent();
+  const s = c.aboutSections || {};
+
+  // Kayla Ann
+  const ka = s.kaylaAnn || {};
+  setText('about-ka-label',   ka.label);
+  setText('about-ka-heading', ka.heading);
+  setText('about-ka-body1',   ka.body1);
+  setText('about-ka-body2',   ka.body2);
+  setText('about-ka-note',    ka.note);
+
+  // Perry's Way
+  const pw = s.perrysWay || {};
+  setText('about-pw-label',   pw.label);
+  setText('about-pw-heading', pw.heading);
+  const pillarsEl = document.getElementById('about-pw-pillars');
+  if (pillarsEl && pw.pillars && pw.pillars.length) {
+    pillarsEl.innerHTML = pw.pillars.map(p => `
+      <div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:2.5rem; margin-bottom:1rem;">${p.emoji}</div>
+        <h3 style="font-size:1.2rem; margin-bottom:.5rem;">${p.heading}</h3>
+        <p style="color:var(--muted); font-size:.9rem;">${p.body}</p>
+      </div>`).join('');
+  }
+
+  // CTA
+  const cta = s.cta || {};
+  setText('about-cta-heading', cta.heading);
+  setText('about-cta-body',    cta.body);
+}
+
+// ─── Experience sections ──────────────────────────────────────────────────────
+
+async function initExperienceSections() {
+  if (!document.getElementById('exp-dining-heading')) return; // not experience page
+  const c = await getContent();
+  const s = c.experienceSections || {};
+
+  // Dining
+  const d = s.dining || {};
+  setText('exp-dining-label',   d.label);
+  setText('exp-dining-heading', d.heading);
+  setText('exp-dining-body1',   d.body1);
+  setText('exp-dining-body2',   d.body2);
+  setText('exp-dining-note',    d.note);
+
+  // Facilities
+  const f = s.facilities || {};
+  setText('exp-fac-label',   f.label);
+  setText('exp-fac-heading', f.heading);
+  setText('exp-fac-intro',   f.intro);
+  setText('exp-fac-note',    f.note);
+
+  // CTA
+  const cta = s.cta || {};
+  setText('exp-cta-heading', cta.heading);
+  setText('exp-cta-body',    cta.body);
+}
+
+// ─── Rooms sections ───────────────────────────────────────────────────────────
+
+async function initRoomsSections() {
+  if (!document.getElementById('rooms-intro-body')) return; // not rooms page
+  const c = await getContent();
+  const s = c.roomsSections || {};
+
+  // Intro
+  setText('rooms-intro-body', (s.intro || {}).body);
+
+  // Inclusions
+  const inc = s.inclusions || {};
+  setText('rooms-inc-label',   inc.label);
+  setText('rooms-inc-heading', inc.heading);
+  setText('rooms-inc-note',    inc.note);
+  const incList = document.getElementById('rooms-inc-list');
+  if (incList && inc.items && inc.items.length) {
+    // split into 3 columns of 3
+    const cols = [[], [], []];
+    inc.items.forEach((item, i) => cols[Math.floor(i / 3)].push(item));
+    const colEls = incList.querySelectorAll('.inc-col');
+    cols.forEach((col, ci) => {
+      if (colEls[ci]) colEls[ci].innerHTML = col.map(item =>
+        `<li style="display:flex;gap:.75rem;align-items:start;"><span style="color:var(--gold);font-size:1.1rem;">✦</span>${item}</li>`
+      ).join('');
+    });
+  }
+
+  // Rates teaser
+  const rt = s.ratesTeaser || {};
+  setText('rooms-rates-label',   rt.label);
+  setText('rooms-rates-heading', rt.heading);
+  setText('rooms-rates-body',    rt.body);
+
+  // Living & Dining (Feature C) — only shown if enabled
+  const ld = s.livingDining || {};
+  const ldSection = document.getElementById('rooms-living-dining');
+  if (ldSection) {
+    if (ld.enabled) {
+      setText('rooms-ld-heading', ld.heading);
+      setText('rooms-ld-body',    ld.body);
+      const ldImg = document.getElementById('rooms-ld-img');
+      if (ldImg && ld.image) { ldImg.src = ld.image; ldImg.style.display = ''; }
+      ldSection.style.display = '';
+    } else {
+      ldSection.style.display = 'none';
+    }
+  }
+}
+
 // ─── Site identity (logo) ─────────────────────────────────────────────────────
 //
 // If siteIdentity.logoImage is set in KV, replace the text "Perry's" in every
@@ -282,6 +442,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initSiteIdentity();
   initImages();
+  initHomeSections();
+  initAboutSections();
+  initExperienceSections();
+  initRoomsSections();
   initSpecialsBanner();
   initRatesTable();
   initLaundryTable();

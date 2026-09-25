@@ -147,6 +147,114 @@ const DEFAULTS = {
   whales: '',
   gallery: [],
 },
+  homeSections: {
+    hero: {
+      heading: "Perry's @ Umdoni Point",
+      subtext: 'A peaceful South Coast escape where coastal forest, history and warm hospitality come together.',
+    },
+    intro: {
+      label: 'Welcome',
+      heading: 'Where the forest meets the sea',
+      body1: "Perry's @ Umdoni Point is a boutique guesthouse nestled in Pennington on the KwaZulu-Natal South Coast — a stretch of coastline known for its lush forests, warm waters and unhurried pace of life.",
+      body2: "Situated in the historic Barker Farmhouse, our five individually styled rooms offer comfort, character and genuine South African warmth. Whether you're here for a quiet escape, a beach holiday or a romantic getaway, Perry's feels like home from the moment you arrive.",
+    },
+    whyPerrys: {
+      label: "Why Perry's",
+      heading: 'Six good reasons to stay with us',
+      subtext: "We're not a hotel. We're a guesthouse — and there's a difference.",
+      items: [
+        'Five individually styled rooms — not a production line',
+        'Set in the historic Barker Farmhouse with a story worth knowing',
+        "Chef Kayla Ann's two-course set dinner, prepared fresh each evening",
+        "Full access to Umdoni Point's pool, gym, spa, padel and pickleball",
+        "Five minutes from Pennington's pristine beaches and coastal walks",
+        'Warm, personal service — not a front-desk experience',
+      ],
+    },
+    experienceTeaser: {
+      label: 'The Experience',
+      heading: 'More than a room',
+      body: "Guests at Perry's have full access to Umdoni Point's resort-quality facilities — a heated pool, fully equipped gym, padel and pickleball courts, the Revive Coastal Luxury Spa, and the Italian Club restaurant, all on your doorstep.",
+    },
+    cta: {
+      label: 'Ready to book?',
+      heading: 'Come and stay with us',
+      body: "Contact Debbi directly via WhatsApp or fill in our booking form — we'll confirm your stay personally.",
+    },
+  },
+  aboutSections: {
+    kaylaAnn: {
+      label: 'The Chef',
+      heading: "Kayla Ann's Table",
+      body1: "Kayla Ann has spent decades honing her craft in this very kitchen. As founder of the former chef school on the property, she brings decades of culinary passion to Perry's dining experience.",
+      body2: "Each evening she prepares a fresh two-course set dinner for guests — hearty, seasonal, and entirely her own. It's the kind of meal that makes you linger at the table long after the plates are cleared.",
+      note: 'Dinner is available as part of select packages. See our rates page for details.',
+    },
+    perrysWay: {
+      label: 'What we stand for',
+      heading: "The Perry's Way",
+      pillars: [
+        { emoji: '🌿', heading: 'Rooted in place',       body: "The farmhouse, the forest, the sea — we're part of this landscape and we want you to feel it." },
+        { emoji: '🤝', heading: 'Personal hospitality',  body: "We know your name when you arrive. No front desk, no scripts — just genuine warmth." },
+        { emoji: '🍽️', heading: 'Food at the heart',    body: "This farmhouse was built around a kitchen. That hasn't changed — Kayla Ann's table is still the soul of Perry's." },
+      ],
+    },
+    cta: {
+      heading: 'Come and be part of the story',
+      body: "Perry's is a living, breathing place with history in its walls and warmth in its welcome. We'd love to have you.",
+    },
+  },
+  experienceSections: {
+    dining: {
+      label: 'Dining',
+      heading: "Kayla Ann's Table",
+      body1: 'Each evening, chef Kayla Ann prepares a fresh two-course set dinner for guests. This is home cooking at its finest — hearty, seasonal and made with genuine care.',
+      body2: 'Breakfast is included in all packages, ranging from a continental spread to a full hot breakfast. See our rates page for the full package options.',
+      note: "The Italian Club restaurant is also located on the Umdoni Point estate for evenings when you'd like to dine out without going far.",
+    },
+    facilities: {
+      label: 'On-Site Facilities',
+      heading: 'Resort-Quality Amenities',
+      intro: "As a guest at Perry's, you have full access to the world-class facilities of the Umdoni Point estate. Guest access and any applicable discounts are to be confirmed — please ask us when you book.",
+      note: 'Guest access and discounts to be confirmed with Debbi when booking.',
+    },
+    cta: {
+      heading: "Ready for your Perry's experience?",
+      body: 'Book direct for the best rates — or WhatsApp Debbi to plan your stay.',
+    },
+  },
+  roomsSections: {
+    intro: {
+      body: "Each room at Perry's has its own character — no two are the same. Full room details and photography are coming soon as we complete our opening preparations. Contact us to enquire about a specific room.",
+    },
+    inclusions: {
+      label: 'Every Room Includes',
+      heading: 'Standard Inclusions',
+      items: [
+        'En-suite bathroom',
+        'Air conditioning',
+        'Quality linen and towels',
+        'Tea & coffee station',
+        'Hair dryer',
+        'Smart TV',
+        'Free Wi-Fi',
+        'Safe',
+        'Daily housekeeping',
+      ],
+      note: 'Amenities to be confirmed per room. Contact us for current availability.',
+    },
+    ratesTeaser: {
+      label: 'Rates',
+      heading: 'From R950 per person per night',
+      body: 'All our packages include breakfast. Dinner packages are also available. View the full rates table and book direct for the best price.',
+    },
+    livingDining: {
+      enabled: false,
+      heading: 'Living & Dining',
+      body: '',
+      image: '',
+    },
+  },
   siteIdentity: {
     logoImage: '',      // URL of uploaded logo (served via ImageKit)
     siteName: "Perry's @ Umdoni Point",
