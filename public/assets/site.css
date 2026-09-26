@@ -1,14 +1,15 @@
-/* ─── Perry's @ Umdoni Point — Design System ──────────────────────────────── */
+/* ─── The Ridge House — Design System ─────────────────────────────────────── */
+/* TEMPLATE NOTE: Swap these 4 tokens to rebrand for any new client           */
 
 :root {
-  --navy:    #1B2A4A;
-  --gold:    #C9A84C;
-  --gold-lt: #E6C97A;
-  --cream:   #F5F1EB;
+  --navy:    #2C3D2A;  /* Forest green  → client primary dark colour  */
+  --gold:    #8B6914;  /* Warm amber    → client accent colour         */
+  --gold-lt: #B8902A;  /* Light amber   → hover / highlight            */
+  --cream:   #F2EDE4;  /* Warm stone    → client background tint       */
   --white:   #FFFFFF;
   --text:    #2C2C2C;
   --muted:   #6B6B6B;
-  --border:  rgba(201,168,76,0.3);
+  --border:  rgba(139,105,20,0.25);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'Montserrat', system-ui, sans-serif;

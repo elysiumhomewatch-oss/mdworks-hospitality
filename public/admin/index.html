@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Admin | Perry's @ Umdoni Point</title>
+  <title>Admin | The Ridge House Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="/assets/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -234,7 +234,7 @@
 <!-- Login Screen -->
 <div id="login-screen">
   <div class="login-box">
-    <h1>Perry's Admin</h1>
+    <h1>Ridge House Admin</h1>
     <p>Enter your admin password to continue</p>
     <input type="password" id="token-input" placeholder="Admin password" autocomplete="current-password">
     <p class="login-error" id="login-error">Incorrect password — please try again.</p>
@@ -246,7 +246,7 @@
   <!-- Sidebar -->
   <aside id="sidebar">
     <div class="sidebar-logo">
-      Perry's<br>@ Umdoni Point
+      The Ridge<br>House
       <small>Admin Dashboard</small>
     </div>
     <nav class="sidebar-nav">
@@ -323,7 +323,7 @@
         </div>
 
         <div class="card">
-          <div class="card-title">Outstanding Items (Debbi's Checklist)</div>
+          <div class="card-title">Outstanding Items (Owner's Checklist)</div>
           <ul class="pending-list" id="dash-pending-list"></ul>
         </div>
       </div>
@@ -360,7 +360,7 @@
         <!-- Logo upload card -->
         <div class="card">
           <div class="card-title">Site Logo</div>
-          <p style="color:var(--muted); font-size:.82rem; margin-bottom:.5rem;">Upload your logo to display it in the navigation bar on every page. If no logo is uploaded, the site shows the text "Perry's" instead.</p>
+          <p style="color:var(--muted); font-size:.82rem; margin-bottom:.5rem;">Upload your logo to display it in the navigation bar on every page. If no logo is uploaded, the site shows the property name instead.</p>
           <p style="color:var(--muted); font-size:.78rem; margin-bottom:1.25rem;">
             💡 <strong>Recommended:</strong> PNG with transparent background · 400×160 px or similar wide format · max 500 KB
           </p>
@@ -503,7 +503,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-title">Why Perry's Section</div>
+            <div class="card-title">Why Us Section</div>
             <div class="form-row">
               <div class="form-group"><label>Label</label><input type="text" id="pc-home-why-label"></div>
               <div class="form-group"><label>Heading</label><input type="text" id="pc-home-why-heading"></div>
@@ -560,7 +560,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="card-title">Perry's Way Section</div>
+            <div class="card-title">Our Values Section</div>
             <div class="form-row">
               <div class="form-group"><label>Label</label><input type="text" id="pc-about-pw-label"></div>
               <div class="form-group"><label>Heading</label><input type="text" id="pc-about-pw-heading"></div>
@@ -789,7 +789,7 @@
       <!-- ── PENDING ── -->
       <div class="page" id="page-pending">
         <div class="card">
-          <div class="card-title">Debbi's Outstanding Items Checklist</div>
+          <div class="card-title">Owner's Outstanding Items Checklist</div>
           <p style="color:var(--muted); font-size:.82rem; margin-bottom:1.25rem;">Track what's still needed before the site is fully live. Check items off as they're resolved.</p>
           <div id="pending-alert"></div>
           <ul class="pending-list" id="pending-list"></ul>
@@ -803,7 +803,7 @@
 
 <script>
 // ─── Config ───────────────────────────────────────────────────────────────────
-const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev';
+const API = 'https://mdworks-hospitality-worker.morneydeetlefs.workers.dev';
 let TOKEN = '';
 let _content = null;
 let _bookings = null;
@@ -1199,7 +1199,7 @@ async function uploadLDImage(e) {
   fd.append('file', file);
   fd.append('role', 'named');
   fd.append('imageKey', 'livingDining');
-  fd.append('alt', 'Living and dining area at Perry\'s');
+  fd.append('alt', 'Living and dining area at The Ridge House');
   showAlert('pc-alert', 'Uploading image…', 'info');
   try {
     const r = await fetch(`${API}/api/admin/image`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}` }, body: fd });
@@ -1256,7 +1256,7 @@ async function uploadLogo(e) {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('role', 'logo');
-  fd.append('alt', "Perry's @ Umdoni Point logo");
+  fd.append('alt', "The Ridge House logo");
   showAlert('logo-alert', 'Uploading logo…', 'info');
   try {
     const r = await fetch(`${API}/api/admin/image`, {
@@ -1279,7 +1279,7 @@ async function uploadLogo(e) {
 }
 
 async function clearLogo() {
-  if (!confirm('Remove the logo? The site will show the text "Perry\'s" instead.')) return;
+  if (!confirm('Remove the logo? The site will show the property name instead.')) return;
   const c = await getContent();
   const identity = { ...(c.siteIdentity || {}), logoImage: '' };
   const r = await saveContent('siteIdentity', identity);
@@ -1902,12 +1902,12 @@ let groqKey   = localStorage.getItem(LS_KEY)   || '';
 let groqModel = localStorage.getItem(LS_MODEL) || '';
 
 // System prompt — distilled from the admin guide
-const SYSTEM_PROMPT = `You are the Admin Assistant for Perry's @ Umdoni Point, a boutique guesthouse website. You help Debbi (the owner) and Athol understand how to use the website admin panel at perrys.pages.dev/admin/.
+const SYSTEM_PROMPT = `You are the Admin Assistant for The Ridge House, a boutique forest retreat website. You help the owner and Athol understand how to use the website admin panel at mdworks-hospitality.pages.dev/admin/.
 
 You are friendly, clear and non-technical. Always use plain English. When giving instructions, use numbered steps.
 
 Key facts about the admin panel:
-- Login: go to perrys.pages.dev/admin/ and enter the password
+- Login: go to mdworks-hospitality.pages.dev/admin/ and enter the password
 - Dashboard: shows booking stats, recent bookings, and the outstanding items checklist
 - All Bookings: view, filter, confirm, cancel or delete booking enquiries. Delete is permanent.
 - Site Settings: update phone, WhatsApp, email, address, social links, Google Maps embed, site logo (PNG, 400x160px recommended), and property type label (e.g. "Farmhouse")
@@ -1919,7 +1919,7 @@ Key facts about the admin panel:
 - Things To Do: add, edit or remove activity cards. Click "Save Things To Do".
 - Images: 8 named image slots (hero, OG image, farmhouse, farmhouse exterior, Kayla Ann, dining, golf, whales) + gallery grid. Gallery uploads immediately, named images need to be set per slot.
 - Pending Items: private checklist of outstanding tasks. Tick and save to mark complete.
-- Admin Guide: full help document available at perrys.pages.dev/admin/guide.html
+- Admin Guide: full help document available at mdworks-hospitality.pages.dev/admin/guide.html
 
 Image size guidance:
 - Logo: 400x160px, transparent PNG
@@ -1928,7 +1928,7 @@ Image size guidance:
 - Gallery: 1200x900px landscape or 900x1200px portrait
 - Max file size: 1MB for photos, 500KB for logo
 
-If you don't know something specific, say so honestly and suggest checking the guide at perrys.pages.dev/admin/guide.html.
+If you don't know something specific, say so honestly and suggest checking the guide at mdworks-hospitality.pages.dev/admin/guide.html.
 Keep answers concise. For multi-step tasks, use numbered steps.`;
 
 // ── Panel toggle ──────────────────────────────────────────────────────────────

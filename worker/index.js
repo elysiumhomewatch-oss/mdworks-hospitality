@@ -1,5 +1,5 @@
 /**
- * Perry's @ Umdoni Point — Cloudflare Worker
+ * MD Works Hospitality Template — Cloudflare Worker
  * 
  * Routes:
  *   GET  /api/content                        — all public content from KV (with defaults)
@@ -40,59 +40,51 @@ function err(msg, status = 400) {
 
 const DEFAULTS = {
   meta: {
-    siteName: "Perry's @ Umdoni Point",
-    tagline: 'Boutique Coastal Forest Getaway',
-    location: 'Pennington, KwaZulu-Natal, South Coast, South Africa',
-    phone: '', // to be confirmed by Debbi
-    whatsapp: '', // to be confirmed by Debbi
-    email: '', // to be confirmed by Debbi
-    instagram: '', // to be confirmed by Debbi
-    facebook: '', // to be confirmed by Debbi
-    googleMapsEmbed: '', // to be confirmed by Debbi
-    address: 'Pennington, KwaZulu-Natal, South Africa',
+    siteName: 'The Ridge House',
+    tagline: 'Boutique Forest Retreat',
+    location: 'Knysna, Garden Route, South Africa',
+    phone: '+27 44 000 0000',
+    whatsapp: '27440000000',
+    email: 'stay@theridgehouse.co.za',
+    instagram: '',
+    facebook: '',
+    googleMapsEmbed: '',
+    address: 'The Ridge House, Knysna Heights, Knysna, 6571',
   },
   specials: {
     active: true,
-    title: 'September 2026 Opening Special',
-    body: 'Celebrate our grand opening with exclusive rates. From R950 pp/night including continental breakfast.',
+    title: 'Opening Special — October 2026',
+    body: 'Celebrate our opening with 3 nights for the price of 2. Includes breakfast daily and a welcome sundowner.',
     ctaLabel: 'View Rates',
     ctaLink: '/rates/',
   },
   rates: [
     {
       id: 'r1',
-      package: 'Accommodation + Continental Breakfast',
-      standard: 950,
-      weekend: 1100,
-      peak: 1350,
+      package: 'Bed & Breakfast',
+      standard: 1100,
+      weekend: 1300,
+      peak: 1600,
       unit: 'pp/night',
     },
     {
       id: 'r2',
-      package: 'Accommodation + Continental & Hot Breakfast',
-      standard: 1100,
-      weekend: 1250,
-      peak: 1500,
+      package: 'Bed, Breakfast & Dinner',
+      standard: 1450,
+      weekend: 1650,
+      peak: 1950,
       unit: 'pp/night',
     },
     {
       id: 'r3',
-      package: 'Accommodation + Dinner + Continental Breakfast',
-      standard: 1300,
-      weekend: 1450,
-      peak: 1700,
-      unit: 'pp/night',
-    },
-    {
-      id: 'r4',
-      package: 'Accommodation + Dinner + Continental & Hot Breakfast',
-      standard: 1450,
-      weekend: 1600,
-      peak: 1850,
+      package: 'Full Board (all meals)',
+      standard: 1750,
+      weekend: 1950,
+      peak: 2350,
       unit: 'pp/night',
     },
   ],
-  ratesNotes: 'Peak season: December and all South African public and school holiday periods (Easter, long weekends, etc.).',
+  ratesNotes: 'Peak season: December school holidays, Easter, and all South African public holiday long weekends. Single supplement applies.',
   laundry: [
     { id: 'l1', item: 'Small load', price: 150 },
     { id: 'l2', item: 'Medium load', price: 250 },
@@ -102,39 +94,39 @@ const DEFAULTS = {
     { id: 'l6', item: 'Jackets / Jerseys', price: 60 },
   ],
   rooms: [
-    { id: 'room-1', name: 'Room 1 — Coming Soon', slug: 'room-1', placeholder: true, description: 'Details coming soon. Contact us to enquire.', bedType: '', occupancy: '', amenities: [], rate: '' },
-    { id: 'room-2', name: 'Room 2 — Coming Soon', slug: 'room-2', placeholder: true, description: 'Details coming soon. Contact us to enquire.', bedType: '', occupancy: '', amenities: [], rate: '' },
-    { id: 'room-3', name: 'Room 3 — Coming Soon', slug: 'room-3', placeholder: true, description: 'Details coming soon. Contact us to enquire.', bedType: '', occupancy: '', amenities: [], rate: '' },
-    { id: 'room-4', name: 'Room 4 — Coming Soon', slug: 'room-4', placeholder: true, description: 'Details coming soon. Contact us to enquire.', bedType: '', occupancy: '', amenities: [], rate: '' },
-    { id: 'room-5', name: 'Room 5 — Coming Soon', slug: 'room-5', placeholder: true, description: 'Details coming soon. Contact us to enquire.', bedType: '', occupancy: '', amenities: [], rate: '' },
+    { id: 'room-1', name: 'The Canopy Suite', slug: 'canopy-suite', placeholder: false, description: 'Our signature room — a spacious suite with floor-to-ceiling forest views, a private deck and a freestanding bath positioned to catch the morning light through the trees. Pure indulgence.', bedType: 'King', occupancy: '2 adults', amenities: ['En-suite', 'Private deck', 'Freestanding bath', 'Forest views', 'AC', 'Smart TV', 'Coffee station', 'Safe', 'Wi-Fi'], heroImage: '' },
+    { id: 'room-2', name: 'The Fern Room', slug: 'fern-room', placeholder: false, description: 'A serene garden-level room with direct access to the indigenous garden. Earthy tones, natural textures and a generous bathroom with a rain shower. Perfect for couples seeking quiet.', bedType: 'Queen', occupancy: '2 adults', amenities: ['En-suite', 'Garden access', 'Rain shower', 'AC', 'Smart TV', 'Coffee station', 'Safe', 'Wi-Fi'], heroImage: '' },
+    { id: 'room-3', name: 'The Treetop Room', slug: 'treetop-room', placeholder: false, description: 'Perched on the upper level with a bird\'s-eye view over the Knysna forest canopy. Light-filled, airy and utterly peaceful. Watch the mist roll through the trees from your private balcony.', bedType: 'King', occupancy: '2 adults', amenities: ['En-suite', 'Private balcony', 'Forest canopy views', 'AC', 'Smart TV', 'Coffee station', 'Safe', 'Wi-Fi'], heroImage: '' },
+    { id: 'room-4', name: 'The Lagoon Room', slug: 'lagoon-room', placeholder: false, description: 'The only room with a glimpse of the Knysna Lagoon through the trees. Twin beds that can be configured as a king, making it ideal for friends travelling together or couples who prefer extra space.', bedType: 'Twin / King', occupancy: '2 adults', amenities: ['En-suite', 'Lagoon views', 'Configurable beds', 'AC', 'Smart TV', 'Coffee station', 'Safe', 'Wi-Fi'], heroImage: '' },
+    { id: 'room-5', name: 'The Garden Cottage', slug: 'garden-cottage', placeholder: false, description: 'A self-contained cottage set apart from the main house — ideal for families or guests who prefer complete privacy. Features a small kitchenette, a private patio and a pull-out sofa for a third guest.', bedType: 'Queen + sofa bed', occupancy: '2 adults + 1 child', amenities: ['En-suite', 'Kitchenette', 'Private patio', 'Sofa bed', 'AC', 'Smart TV', 'Coffee station', 'Safe', 'Wi-Fi'], heroImage: '' },
   ],
   story: {
-    headline: "A Historic South Coast Retreat",
-    body: `Perry's @ Umdoni Point is set in the historic Barker Farmhouse on the KwaZulu-Natal South Coast — a property with deep roots in the local landscape. Formerly home to a celebrated chef school under Kayla Ann, the farmhouse has been lovingly restored and reimagined as a warm, welcoming boutique guesthouse.\n\nToday, Kayla Ann continues to bring her craft to the table — guests can enjoy her signature two-course set dinner, prepared fresh each evening.\n\nThis is a place where history, nature and genuine South African hospitality come together.`,
+    headline: 'Born from the Forest',
+    body: `The Ridge House began as a family home — built into the hillside above Knysna by the van der Berg family in the early 1980s, when the surrounding indigenous forest was still wild and largely uncharted. For decades it was a private retreat, a place to escape the noise of the world.\n\nIn 2024, after years of careful restoration, The Ridge House opened its doors as a boutique guesthouse — honouring the original spirit of the property while creating something new. The bones of the building remain: the stone walls, the wide stoep, the enormous windows that frame the forest like living paintings.\n\nThe kitchen has always been at the heart of the Ridge House. Chef Thembi, who grew up in Knysna and trained in Cape Town, brings a distinctly Garden Route sensibility to the table — seasonal, unfussy, deeply flavourful. Her breakfasts alone are worth the stay.\n\nThis is not a hotel. It is a home that happens to have five beautiful rooms — and guests who leave always say they felt the difference.`,
   },
   facilities: {
-    sport: ['Heated swimming pool', 'Fully equipped gym', 'Padel court', 'Pickleball court'],
-    wellness: ['Revive Coastal Luxury Spa (Beauty: 082 391 9248 · Hair: 076 792 9563)'],
-    dining: ['Italian Club restaurant on-site'],
-    notes: 'Guest access and discounts to be confirmed with owner.',
+    sport: ['Heated infinity pool with forest views', 'Mountain bikes available', 'Forest hiking trails from the property'],
+    wellness: ['In-room massage by arrangement', 'Yoga deck overlooking the canopy'],
+    dining: ['Chef Thembi\'s breakfast daily', 'Two-course set dinner (bookable)', 'Sundowner drinks on the main stoep'],
+    notes: 'All facilities are exclusive to Ridge House guests.',
   },
   thingsToDo: [
-    { id: 'td1', title: 'Pennington Beaches', description: 'Pristine South Coast beaches minutes away — safe swimming, sunsets, and wide open skies.' },
-    { id: 'td2', title: 'Whale & Dolphin Watching', description: 'Seasonal whale watching (June–November) and year-round dolphin sightings from the shoreline.' },
-    { id: 'td3', title: 'Coastal Walks', description: 'Explore the coastal forest trails and clifftop paths around Umdoni Point.' },
-    { id: 'td4', title: 'Golf', description: 'Four world-class courses nearby: Umdoni Park Golf Club, Selborne Golf Estate, Penn Valley Golf, and more.' },
-    { id: 'td5', title: 'Scuba Diving', description: 'The South Coast is one of South Africa\'s top dive destinations — rich reefs, sharks, and turtles.' },
-    { id: 'td6', title: 'Scottburgh & South Coast', description: 'Explore local restaurants, markets, and attractions along the KZN South Coast.' },
+    { id: 'td1', title: 'Knysna Lagoon', description: 'One of South Africa\'s most beautiful estuaries — kayak, boat cruise, or simply watch the light change over the water from the famous Heads.' },
+    { id: 'td2', title: 'The Knysna Heads', description: 'The dramatic sandstone cliffs at the mouth of the lagoon are iconic Garden Route. Walk the clifftop path for sweeping views of the Indian Ocean.' },
+    { id: 'td3', title: 'Tsitsikamma Forest', description: 'Ancient yellowwood trees, the Storms River Gorge, and the famous suspension bridge. One of South Africa\'s most spectacular national parks, an hour from Knysna.' },
+    { id: 'td4', title: 'Elephant Encounters', description: 'The Knysna Elephant Park offers intimate walking encounters with the last free-roaming elephants of the Knysna forest — a rare and remarkable experience.' },
+    { id: 'td5', title: 'Garden Route Wines', description: 'The Outeniqua and Langkloof valleys produce exceptional cool-climate wines. Several estates offer tastings and cellar tours within easy driving distance.' },
+    { id: 'td6', title: 'Knysna Oysters & Food', description: 'Knysna is famous for its oysters — enjoy them fresh at the waterfront, or explore the town\'s growing food scene of local restaurants and the Saturday market.' },
   ],
   policies: {
     checkIn: '14:00',
-    checkOut: '10:00',
-    cancellation: 'Cancellation policy to be finalised. Please contact us directly.',
-    payment: 'Payment details to be confirmed. Please contact us directly.',
-    smoking: 'Non-smoking inside. Designated outdoor smoking area available.',
+    checkOut: '10:30',
+    cancellation: 'Free cancellation up to 7 days before arrival. Within 7 days, one night\'s accommodation is charged. No-shows are charged in full.',
+    payment: '50% deposit required to confirm booking. Balance due on arrival. EFT and card accepted.',
+    smoking: 'Non-smoking property. Smoking permitted on the lower terrace only.',
     quietHours: '22:00 – 07:00',
-    children: 'Children policy to be confirmed. Please contact us directly.',
-    pets: 'Pet policy to be confirmed. Please contact us directly.',
+    children: 'Children 12 and older are welcome. The Garden Cottage is ideal for families.',
+    pets: 'Well-behaved dogs are welcome in the Garden Cottage by prior arrangement. Please advise when booking.',
   },
   images: {
   hero: '',
@@ -149,138 +141,132 @@ const DEFAULTS = {
 },
   homeSections: {
     hero: {
-      heading: "Perry's @ Umdoni Point",
-      subtext: 'A peaceful South Coast escape where coastal forest, history and warm hospitality come together.',
+      heading: 'The Ridge House',
+      subtext: 'A forest retreat above Knysna — five rooms, one chef, and a view that stops you in your tracks.',
     },
     intro: {
       label: 'Welcome',
-      heading: 'Where the forest meets the sea',
-      body1: "Perry's @ Umdoni Point is a boutique guesthouse nestled in Pennington on the KwaZulu-Natal South Coast — a stretch of coastline known for its lush forests, warm waters and unhurried pace of life.",
-      body2: "Situated in the historic Barker Farmhouse, our five individually styled rooms offer comfort, character and genuine South African warmth. Whether you're here for a quiet escape, a beach holiday or a romantic getaway, Perry's feels like home from the moment you arrive.",
+      heading: 'Where the forest begins',
+      body1: 'The Ridge House is a boutique guesthouse perched above the Knysna forest on the Garden Route — five individually designed rooms set in a lovingly restored stone house with views over the indigenous canopy and, on clear days, a glimpse of the lagoon below.',
+      body2: 'This is a place for people who want to slow down. Who want to wake up to birdsong, eat well, explore one of South Africa\'s most beautiful corners, and come back to something that feels like home. We\'re not a hotel — and that\'s exactly the point.',
     },
-    whyPerrys: {
-      label: "Why Perry's",
-      heading: 'Six good reasons to stay with us',
-      subtext: "We're not a hotel. We're a guesthouse — and there's a difference.",
+    whyRidgeHouse: {
+      label: 'Why The Ridge House',
+      heading: 'Six reasons guests come back',
+      subtext: 'Small by design. Personal by nature.',
       items: [
-        'Five individually styled rooms — not a production line',
-        'Set in the historic Barker Farmhouse with a story worth knowing',
-        "Chef Kayla Ann's two-course set dinner, prepared fresh each evening",
-        "Full access to Umdoni Point's pool, gym, spa, padel and pickleball",
-        "Five minutes from Pennington's pristine beaches and coastal walks",
-        'Warm, personal service — not a front-desk experience',
+        'Five individually designed rooms — each one different, each one considered',
+        'Set in a restored stone house with 40 years of Knysna history',
+        'Chef Thembi\'s breakfasts and set dinners, made from local produce',
+        'Heated infinity pool with an uninterrupted view over the forest canopy',
+        'Hiking trails, mountain bikes and the Knysna Lagoon on your doorstep',
+        'Genuine, unhurried hospitality — we know your name before you arrive',
       ],
     },
     experienceTeaser: {
       label: 'The Experience',
-      heading: 'More than a room',
-      body: "Guests at Perry's have full access to Umdoni Point's resort-quality facilities — a heated pool, fully equipped gym, padel and pickleball courts, the Revive Coastal Luxury Spa, and the Italian Club restaurant, all on your doorstep.",
+      heading: 'Forest, food and complete quiet',
+      body: 'The Ridge House has everything you need and nothing you don\'t. An infinity pool that seems to float above the canopy. A kitchen that produces the kind of food you talk about on the drive home. Bikes and trails for the explorers, hammocks and novels for everyone else.',
     },
     cta: {
       label: 'Ready to book?',
-      heading: 'Come and stay with us',
-      body: "Contact Debbi directly via WhatsApp or fill in our booking form — we'll confirm your stay personally.",
+      heading: 'Come and find your quiet',
+      body: 'Message us directly on WhatsApp or fill in the booking form — we\'ll confirm personally and make sure everything is ready for you.',
     },
   },
   aboutSections: {
     kaylaAnn: {
       label: 'The Chef',
-      heading: "Kayla Ann's Table",
-      body1: "Kayla Ann has spent decades honing her craft in this very kitchen. As founder of the former chef school on the property, she brings decades of culinary passion to Perry's dining experience.",
-      body2: "Each evening she prepares a fresh two-course set dinner for guests — hearty, seasonal, and entirely her own. It's the kind of meal that makes you linger at the table long after the plates are cleared.",
-      note: 'Dinner is available as part of select packages. See our rates page for details.',
+      heading: "Thembi's Kitchen",
+      body1: 'Chef Thembi grew up in Knysna and trained at a Cape Town culinary school before returning to the Garden Route to cook the food she knows best — fresh, seasonal, and deeply rooted in this landscape.',
+      body2: 'Every morning she prepares a full breakfast from scratch. On evenings when guests book the dinner package, she puts together a two-course set menu that changes with the season and whatever looks best at the Knysna Saturday market.',
+      note: 'Dinner is bookable as part of our Bed, Breakfast & Dinner package or as an add-on. Please let us know at least 24 hours in advance.',
     },
-    perrysWay: {
+    ridgeHouseWay: {
       label: 'What we stand for',
-      heading: "The Perry's Way",
+      heading: 'The Ridge House Way',
       pillars: [
-        { emoji: '🌿', heading: 'Rooted in place',       body: "The farmhouse, the forest, the sea — we're part of this landscape and we want you to feel it." },
-        { emoji: '🤝', heading: 'Personal hospitality',  body: "We know your name when you arrive. No front desk, no scripts — just genuine warmth." },
-        { emoji: '🍽️', heading: 'Food at the heart',    body: "This farmhouse was built around a kitchen. That hasn't changed — Kayla Ann's table is still the soul of Perry's." },
+        { emoji: '🌿', heading: 'Forest first', body: 'The indigenous forest is not a backdrop — it is the reason this place exists. We protect it, we walk in it, and we never take it for granted.' },
+        { emoji: '🤝', heading: 'Genuine welcome', body: 'We know your name before you arrive and remember your coffee order by morning two. This is what small looks like done well.' },
+        { emoji: '🍳', heading: 'Real food', body: "Thembi doesn't do menus printed in six fonts. She cooks what's in season, what's local, and what she'd want to eat herself." },
       ],
     },
     cta: {
-      heading: 'Come and be part of the story',
-      body: "Perry's is a living, breathing place with history in its walls and warmth in its welcome. We'd love to have you.",
+      heading: 'Come and stay in the forest',
+      body: 'The Ridge House has five rooms, one kitchen and a forest that has been here far longer than any of us. We think that\'s worth experiencing.',
     },
   },
   experienceSections: {
     dining: {
       label: 'Dining',
-      heading: "Kayla Ann's Table",
-      body1: 'Each evening, chef Kayla Ann prepares a fresh two-course set dinner for guests. This is home cooking at its finest — hearty, seasonal and made with genuine care.',
-      body2: 'Breakfast is included in all packages, ranging from a continental spread to a full hot breakfast. See our rates page for the full package options.',
-      note: "The Italian Club restaurant is also located on the Umdoni Point estate for evenings when you'd like to dine out without going far.",
+      heading: "Thembi's Kitchen",
+      body1: 'Breakfast at The Ridge House is the meal guests mention first when they leave a review. Thembi starts early — eggs from the farm down the road, fruit from the Saturday market, bread baked that morning. It\'s the kind of breakfast that makes you cancel your plans for the morning.',
+      body2: 'Dinner is a two-course set menu, available when booked in advance as part of a package or as an add-on. The menu changes with the season and the market. Guests eat together at the long table on the stoep when the weather allows — strangers who leave as friends.',
+      note: 'Dietary requirements are always accommodated — just let us know when you book.',
     },
     facilities: {
-      label: 'On-Site Facilities',
-      heading: 'Resort-Quality Amenities',
-      intro: "As a guest at Perry's, you have full access to the world-class facilities of the Umdoni Point estate. Guest access and any applicable discounts are to be confirmed — please ask us when you book.",
-      note: 'Guest access and discounts to be confirmed with Debbi when booking.',
+      label: 'At The Ridge House',
+      heading: 'Everything you need',
+      intro: 'The Ridge House is a private property — all facilities are exclusive to guests staying with us. No day visitors, no conference groups. Just the people staying here, the forest, and complete quiet.',
+      note: 'Mountain bikes and hiking maps available at the house. In-room massage bookable through us with 24 hours\' notice.',
     },
     cta: {
-      heading: "Ready for your Perry's experience?",
-      body: 'Book direct for the best rates — or WhatsApp Debbi to plan your stay.',
+      heading: 'Ready to experience the Ridge?',
+      body: 'Book direct for the best rate — or WhatsApp us to plan your stay around what you want to do.',
     },
   },
   roomsSections: {
     intro: {
-      body: "Each room at Perry's has its own character — no two are the same. Full room details and photography are coming soon as we complete our opening preparations. Contact us to enquire about a specific room.",
+      body: 'Five rooms, each one different. We designed them to feel like distinct spaces rather than variations on a theme — different views, different moods, different reasons to choose one over another. All of them have the same things in common: good beds, proper bathrooms, and a forest outside the window.',
     },
     inclusions: {
       label: 'Every Room Includes',
-      heading: 'Standard Inclusions',
+      heading: 'Standard in Every Room',
       items: [
         'En-suite bathroom',
+        'Premium linen and towels',
         'Air conditioning',
-        'Quality linen and towels',
-        'Tea & coffee station',
+        'Tea, coffee & filtered water',
         'Hair dryer',
         'Smart TV',
-        'Free Wi-Fi',
-        'Safe',
+        'Free high-speed Wi-Fi',
+        'In-room safe',
         'Daily housekeeping',
       ],
-      note: 'Amenities to be confirmed per room. Contact us for current availability.',
+      note: 'Additional amenities vary by room. See individual room descriptions for details.',
     },
     ratesTeaser: {
       label: 'Rates',
-      heading: 'From R950 per person per night',
-      body: 'All our packages include breakfast. Dinner packages are also available. View the full rates table and book direct for the best price.',
+      heading: 'From R1,100 per person per night',
+      body: 'All packages include Thembi\'s full breakfast. Dinner packages are available. Book direct for the best rate — we never charge booking platform fees.',
     },
     livingDining: {
-      enabled: false,
-      heading: 'Living & Dining',
-      body: '',
+      enabled: true,
+      heading: 'The Main Stoep & Living Room',
+      body: 'The heart of The Ridge House is the main stoep — a wide, covered terrace overlooking the forest canopy where guests gather for sundowners, breakfast on clear mornings, and dinner under the stars. Inside, the living room has deep sofas, a wood-burning fireplace for winter evenings, and a library of books about the Garden Route and its history.',
       image: '',
     },
   },
   siteIdentity: {
-    logoImage: '',      // URL of uploaded logo (served via ImageKit)
-    siteName: "Perry's @ Umdoni Point",
-    tagline: 'Boutique Coastal Forest Getaway',
-    footerTagline: 'Boutique Coastal Forest Getaway in the historic Barker Farmhouse, Pennington, KwaZulu-Natal South Coast.',
-    propertyType: 'Farmhouse', // Used wherever "Farmhouse" appears on the site
+    logoImage: '',
+    siteName: 'The Ridge House',
+    tagline: 'Boutique Forest Retreat',
+    footerTagline: 'A boutique forest retreat above Knysna on the Garden Route, Western Cape.',
+    propertyType: 'Lodge',
   },
   pending: {
-    // Debbi's outstanding items — visible in admin dashboard
     items: [
       { id: 'p1', label: 'Final website domain', done: false },
       { id: 'p2', label: 'Final email address', done: false },
-      { id: 'p3', label: 'Final WhatsApp / direct booking number', done: false },
-      { id: 'p4', label: 'Exact physical address and Google Maps pin', done: false },
-      { id: 'p5', label: 'Final 5 room names', done: false },
-      { id: 'p6', label: 'Maximum occupancy per room', done: false },
-      { id: 'p7', label: 'Full room descriptions and confirmed amenities (per room)', done: false },
-      { id: 'p8', label: 'Confirmed check-in and check-out times', done: false },
-      { id: 'p9', label: 'Final rates and inclusions', done: false },
-      { id: 'p10', label: 'Deposit / payment arrangements', done: false },
-      { id: 'p11', label: 'Cancellation policy (final wording)', done: false },
-      { id: 'p12', label: 'Children policy', done: false },
-      { id: 'p13', label: 'Pet policy', done: false },
-      { id: 'p14', label: 'Instagram handle + Facebook page URL', done: false },
-      { id: 'p15', label: 'Photography (property, rooms, bathrooms, pool, food, surroundings)', done: false },
-      { id: 'p16', label: 'Booking platform links (Lekker Slaap, etc.) once accounts created', done: false },
+      { id: 'p3', label: 'WhatsApp booking number', done: false },
+      { id: 'p4', label: 'Physical address and Google Maps pin', done: false },
+      { id: 'p5', label: 'Photography — property exterior and surroundings', done: false },
+      { id: 'p6', label: 'Photography — all 5 rooms', done: false },
+      { id: 'p7', label: 'Photography — kitchen and dining', done: false },
+      { id: 'p8', label: 'Photography — pool and stoep', done: false },
+      { id: 'p9', label: 'Instagram and Facebook handles', done: false },
+      { id: 'p10', label: 'Confirm deposit and payment terms', done: false },
+      { id: 'p11', label: 'Logo file from designer', done: false },
     ],
   },
 };
@@ -337,7 +323,7 @@ function buildWhatsAppUrl(whatsapp, booking) {
   const raw = whatsapp.replace(/\D/g, '');
 const num = raw.startsWith('0') ? '27' + raw.slice(1) : raw;
   const msg = [
-    `*New Booking Request — Perry's @ Umdoni Point*`,
+    `*New Booking Request — The Ridge House*`,
     ``,
     `Name: ${booking.name}`,
     `Email: ${booking.email}`,
@@ -359,11 +345,11 @@ function buildCalendarUrl(booking) {
   const start = booking.checkIn.replace(/-/g, '');
   // Check-out is next day midnight — use date only for all-day event
   const end = booking.checkOut.replace(/-/g, '');
-  const title = encodeURIComponent(`${booking.name} — Perry's @ Umdoni Point`);
+  const title = encodeURIComponent(`${booking.name} — The Ridge House`);
   const details = encodeURIComponent(
     `Guest: ${booking.name}\nPhone: ${booking.phone}\nEmail: ${booking.email}\nGuests: ${booking.guests}\nRef: ${booking.id}`
   );
-  const location = encodeURIComponent("Perry's @ Umdoni Point, Pennington, KZN South Coast");
+  const location = encodeURIComponent("The Ridge House, Pennington, KZN South Coast");
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 }
 

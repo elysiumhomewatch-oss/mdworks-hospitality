@@ -3,7 +3,7 @@
  * Handles: API fetch, nav highlight, specials banner, booking form, image injection
  */
 
-const API = 'https://perrys-umdonipoint-worker.morneydeetlefs.workers.dev';
+const API = 'https://mdworks-hospitality-worker.morneydeetlefs.workers.dev';
 
 // ─── Content loader ────────────────────────────────────────────────────────────
 
