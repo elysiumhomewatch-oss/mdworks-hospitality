@@ -1,0 +1,15 @@
+# Wrangler local state and cache (contains account info, never commit)
+.wrangler/
+
+# Local secrets
+.dev.vars
+.env
+.env.*
+
+# Dependencies and logs
+node_modules/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
