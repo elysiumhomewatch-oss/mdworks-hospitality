@@ -9,3 +9,8 @@ id = "19973468f54b4708b9e852d70eab6c39"
 [vars]
 IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/sxw2wyfov"
 IMAGEKIT_FOLDER = "/ridge-house"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mdworks-hospitality-guests"
+database_id = "b506ab20-db26-46af-8a43-d63e4c986f97"
