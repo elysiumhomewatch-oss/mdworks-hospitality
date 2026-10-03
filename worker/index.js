@@ -18,6 +18,7 @@
  *   IMAGEKIT_PRIVATE_KEY     — ImageKit private API key (secret)
  *   IMAGEKIT_URL_ENDPOINT    — e.g. https://ik.imagekit.io/your-id (per client)
  *   IMAGEKIT_FOLDER          — upload folder, e.g. /ridge-house (per client; optional)
+ *   DB                       — D1 binding (guests, bookings, invoices); optional, KV stays primary
  */
 
 const CORS = {
@@ -354,6 +355,88 @@ function buildCalendarUrl(booking) {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 }
 
+// ─── D1 guest helpers ─────────────────────────────────────────────────────────
+// PORT: KV stays the primary store. D1 is a mirror that must never break a booking.
+
+function normalisePhone(raw) {
+  if (!raw) return '';
+  const digits = String(raw).replace(/\D/g, '');
+  // Treat 0XX as 27XX for consistent SA matching
+  return digits.startsWith('0') ? '27' + digits.slice(1) : digits;
+}
+
+// Find an existing guest by email or normalised phone -- returns row or null
+async function dbFindGuest(db, email, phone) {
+  if (!db) return null;
+  const normPhone = normalisePhone(phone);
+  // Never match on empty values -- '' would match every guest with a blank field
+  if (!email && !normPhone) return null;
+  try {
+    const row = await db
+      .prepare(`SELECT * FROM guests WHERE (?1 != '' AND email = ?1) OR (?2 != '' AND phone_norm = ?2) LIMIT 1`)
+      .bind(email || '', normPhone || '')
+      .first();
+    return row || null;
+  } catch { return null; }
+}
+
+// Create the guest if new; bump visit count + last_seen if returning.
+// Returns { guestId, isReturning, visitCount }
+async function dbUpsertGuest(db, { name, email, phone }) {
+  if (!db) return { guestId: null, isReturning: false, visitCount: 1 };
+  const normPhone = normalisePhone(phone);
+  const existing = await dbFindGuest(db, email, normPhone);
+  const now = new Date().toISOString();
+
+  if (existing) {
+    const newCount = (existing.visit_count || 1) + 1;
+    await db
+      .prepare(`UPDATE guests SET visit_count = ?1, last_seen = ?2, name = ?3 WHERE id = ?4`)
+      .bind(newCount, now, name || existing.name, existing.id)
+      .run();
+    return { guestId: existing.id, isReturning: true, visitCount: newCount };
+  }
+
+  const guestId = `g-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  await db
+    .prepare(`INSERT INTO guests (id, name, email, phone, phone_norm, visit_count, notes, created_at, last_seen)
+              VALUES (?1, ?2, ?3, ?4, ?5, 1, '', ?6, ?6)`)
+    .bind(guestId, name || '', email || '', phone || '', normPhone, now)
+    .run();
+  return { guestId, isReturning: false, visitCount: 1 };
+}
+
+// Save a booking row to D1 (linked to the guest)
+async function dbSaveBooking(db, { bookingId, guestId, booking }) {
+  if (!db) return;
+  try {
+    await db
+      .prepare(`INSERT INTO bookings
+                  (id, guest_id, kv_id, name, email, phone, room, check_in, check_out,
+                   guests, package, special, status, created_at)
+                VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,'pending',?13)`)
+      .bind(
+        bookingId,
+        guestId || '',
+        bookingId,
+        booking.name || '',
+        booking.email || '',
+        booking.phone || '',
+        booking.roomPreference || '',
+        booking.checkIn || '',
+        booking.checkOut || '',
+        String(booking.guests || ''),
+        booking.package || '',
+        booking.special || '',
+        new Date().toISOString(),
+      )
+      .run();
+  } catch (e) {
+    // A D1 write failure must never break the main booking flow
+    console.error('D1 booking write failed:', e.message);
+  }
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 export default {
@@ -399,6 +482,11 @@ export default {
 
       // Save full booking
       await kvSet(env, id, booking);
+
+      // PORT: mirror to D1 (secondary -- safe to fail, never blocks the booking)
+      const guestInfo = await dbUpsertGuest(env.DB, booking).catch(() => ({ guestId: null, isReturning: false, visitCount: 1 }));
+      await dbSaveBooking(env.DB, { bookingId: id, guestId: guestInfo.guestId, booking }).catch(() => {});
+      if (guestInfo.isReturning) booking._returningGuest = true;
 
       // Update booking index
       const index = (await kvGet(env, 'bookings-index', []));
@@ -462,6 +550,141 @@ export default {
       const updated = index.filter(b => b.id !== deleteBookingMatch[1]);
       await kvSet(env, 'bookings-index', updated);
       return json({ success: true });
+    }
+
+    // ── Admin: DELETE /api/admin/guest/:id/erase ──────────────────────────────
+    // PORT: POPIA right to erasure -- wipes personal data from the guest and their bookings
+    const eraseMatch = path.match(/^\/api\/admin\/guest\/([^/]+)\/erase$/);
+    if (method === 'DELETE' && eraseMatch) {
+      if (!isAdmin(request, env)) return err('Unauthorised', 401);
+      if (!env.DB) return err('Database not available', 503);
+      const guestId = eraseMatch[1];
+      const REMOVED = '[removed]';
+      try {
+        // 1. Find this guest's booking rows first -- we need kv_id before we wipe anything
+        const bookingRows = await env.DB
+          .prepare(`SELECT id, kv_id FROM bookings WHERE guest_id = ?1`)
+          .bind(guestId)
+          .all();
+        const bookings = bookingRows.results || [];
+
+        // 2. Sanitise each mirrored KV booking record (keeps dates/room/status, strips PII)
+        for (const b of bookings) {
+          const kvId = b.kv_id || b.id;
+          const kvBooking = await kvGet(env, kvId, null);
+          if (kvBooking) {
+            kvBooking.name    = REMOVED;
+            kvBooking.email   = REMOVED;
+            kvBooking.phone   = REMOVED;
+            kvBooking.special = '';
+            await kvSet(env, kvId, kvBooking);
+          }
+        }
+
+        // 3. Sanitise matching entries in bookings-index (used for the admin list view)
+        if (bookings.length) {
+          const kvIds = new Set(bookings.map(b => b.kv_id || b.id));
+          const index = await kvGet(env, 'bookings-index', []);
+          let changed = false;
+          for (const entry of index) {
+            if (kvIds.has(entry.id)) { entry.name = REMOVED; entry.phone = REMOVED; changed = true; }
+          }
+          if (changed) await kvSet(env, 'bookings-index', index);
+        }
+
+        // 4. Nullify PII on all D1 booking rows for this guest (keep dates/room/status)
+        await env.DB
+          .prepare(`UPDATE bookings SET
+            name = ?1, email = ?1, phone = ?1, special = '', package = ''
+            WHERE guest_id = ?2`)
+          .bind(REMOVED, guestId)
+          .run();
+
+        // 5. Delete the guest row entirely
+        await env.DB
+          .prepare(`DELETE FROM guests WHERE id = ?1`)
+          .bind(guestId)
+          .run();
+
+        return json({ success: true, message: 'Guest personal data permanently removed.', bookingsAffected: bookings.length });
+      } catch (e) {
+        return err(`Erasure failed: ${e.message}`, 500);
+      }
+    }
+
+    // ── Admin: GET /api/admin/guests ──────────────────────────────────────────
+    // PORT: list guests, most recent first. Optional ?q= search by name/email/phone.
+    if (method === 'GET' && path === '/api/admin/guests') {
+      if (!isAdmin(request, env)) return err('Unauthorised', 401);
+      if (!env.DB) return err('Database not available', 503);
+      const q = url.searchParams.get('q') || '';
+      let rows;
+      try {
+        if (q) {
+          const like = `%${q}%`;
+          rows = await env.DB
+            .prepare(`SELECT * FROM guests WHERE name LIKE ?1 OR email LIKE ?1 OR phone LIKE ?1 ORDER BY last_seen DESC LIMIT 100`)
+            .bind(like)
+            .all();
+        } else {
+          rows = await env.DB
+            .prepare(`SELECT * FROM guests ORDER BY last_seen DESC LIMIT 100`)
+            .all();
+        }
+        return json(rows.results || []);
+      } catch (e) { return err(`DB error: ${e.message}`, 500); }
+    }
+
+    // ── Admin: GET /api/admin/guest/:id ───────────────────────────────────────
+    // PORT: guest profile + all their bookings
+    const guestMatch = path.match(/^\/api\/admin\/guest\/([^/]+)$/);
+    if (method === 'GET' && guestMatch) {
+      if (!isAdmin(request, env)) return err('Unauthorised', 401);
+      if (!env.DB) return err('Database not available', 503);
+      try {
+        const guest = await env.DB
+          .prepare(`SELECT * FROM guests WHERE id = ?1`)
+          .bind(guestMatch[1])
+          .first();
+        if (!guest) return err('Not found', 404);
+        const bookings = await env.DB
+          .prepare(`SELECT * FROM bookings WHERE guest_id = ?1 ORDER BY created_at DESC`)
+          .bind(guestMatch[1])
+          .all();
+        return json({ guest, bookings: bookings.results || [] });
+      } catch (e) { return err(`DB error: ${e.message}`, 500); }
+    }
+
+    // ── Admin: PATCH /api/admin/guest/:id/notes ───────────────────────────────
+    // PORT: update guest notes (dietary, preferences, special occasions etc.)
+    const guestNotesMatch = path.match(/^\/api\/admin\/guest\/([^/]+)\/notes$/);
+    if (method === 'PATCH' && guestNotesMatch) {
+      if (!isAdmin(request, env)) return err('Unauthorised', 401);
+      if (!env.DB) return err('Database not available', 503);
+      let body;
+      try { body = await request.json(); } catch { return err('Invalid JSON'); }
+      try {
+        await env.DB
+          .prepare(`UPDATE guests SET notes = ?1 WHERE id = ?2`)
+          .bind(body.notes || '', guestNotesMatch[1])
+          .run();
+        return json({ success: true });
+      } catch (e) { return err(`DB error: ${e.message}`, 500); }
+    }
+
+    // ── Admin: GET /api/admin/db/status ───────────────────────────────────────
+    // PORT: quick health check -- confirms D1 is bound and the tables exist
+    if (method === 'GET' && path === '/api/admin/db/status') {
+      if (!isAdmin(request, env)) return err('Unauthorised', 401);
+      if (!env.DB) return json({ ok: false, reason: 'DB binding not present' });
+      try {
+        const guests   = await env.DB.prepare(`SELECT COUNT(*) as n FROM guests`).first();
+        const bookings = await env.DB.prepare(`SELECT COUNT(*) as n FROM bookings`).first();
+        const invoices = await env.DB.prepare(`SELECT COUNT(*) as n FROM invoices`).first().catch(() => ({ n: 'table missing' }));
+        return json({ ok: true, guests: guests.n, bookings: bookings.n, invoices: invoices.n });
+      } catch (e) {
+        return json({ ok: false, reason: e.message });
+      }
     }
 
     // ── Admin: POST /api/admin/content ─────────────────────────────────────
