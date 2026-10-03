@@ -16,7 +16,8 @@
  *   CONTENT                  — KV namespace binding
  *   ADMIN_TOKEN              — bearer token for admin routes
  *   IMAGEKIT_PRIVATE_KEY     — ImageKit private API key (secret)
- *   IMAGEKIT_URL_ENDPOINT    — e.g. https://ik.imagekit.io/perrys
+ *   IMAGEKIT_URL_ENDPOINT    — e.g. https://ik.imagekit.io/your-id (per client)
+ *   IMAGEKIT_FOLDER          — upload folder, e.g. /ridge-house (per client; optional)
  */
 
 const CORS = {
@@ -292,7 +293,7 @@ function isAdmin(request, env) {
 
 // ─── ImageKit upload ──────────────────────────────────────────────────────────
 
-async function uploadToImageKit(env, fileBuffer, fileName, folder = '/perrys') {
+async function uploadToImageKit(env, fileBuffer, fileName, folder = '/mdworks-hospitality') {
   // ImageKit server-side upload uses HTTP Basic auth: privateKey as username, empty password
   const credentials = btoa(`${env.IMAGEKIT_PRIVATE_KEY}:`);
 
@@ -349,7 +350,7 @@ function buildCalendarUrl(booking) {
   const details = encodeURIComponent(
     `Guest: ${booking.name}\nPhone: ${booking.phone}\nEmail: ${booking.email}\nGuests: ${booking.guests}\nRef: ${booking.id}`
   );
-  const location = encodeURIComponent("The Ridge House, Pennington, KZN South Coast");
+  const location = encodeURIComponent("The Ridge House, Knysna, Garden Route");
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 }
 
@@ -496,7 +497,7 @@ export default {
 
       let ikResult;
       try {
-        ikResult = await uploadToImageKit(env, arrayBuffer, fileName, '/perrys');
+        ikResult = await uploadToImageKit(env, arrayBuffer, fileName, env.IMAGEKIT_FOLDER || '/mdworks-hospitality');
       } catch (e) {
         return err(`Image upload failed: ${e.message}`, 502);
       }

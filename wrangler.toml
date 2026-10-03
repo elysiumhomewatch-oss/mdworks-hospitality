@@ -7,4 +7,5 @@ binding = "CONTENT"
 id = "19973468f54b4708b9e852d70eab6c39"
 
 [vars]
-IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/iq9ymgpz2g"
+IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/sxw2wyfov"
+IMAGEKIT_FOLDER = "/ridge-house"
